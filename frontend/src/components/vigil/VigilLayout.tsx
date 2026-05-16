@@ -17,19 +17,7 @@ const navItems: { to: LinkProps["to"]; label: string }[] = [
   { to: "/portfolio", label: "PORTFOLIO" },
 ];
 
-function GridBackground() {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-0"
-      style={{
-        backgroundImage:
-          "linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)",
-        backgroundSize: "40px 40px",
-      }}
-    />
-  );
-}
+
 
 function WalletButton() {
   const { address, connect, disconnect } = useWallet();
@@ -39,7 +27,7 @@ function WalletButton() {
     return (
       <button
         onClick={connect}
-        className="text-[11px] uppercase tracking-[0.15em] transition-opacity hover:opacity-80"
+        className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
         style={{
           color: "#fff",
           backgroundColor: "#0a0a0a",
@@ -56,7 +44,7 @@ function WalletButton() {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="font-mono text-[13px] uppercase tracking-[0.1em] flex items-center gap-3"
+        className="vigil-clickable font-mono text-[13px] uppercase tracking-[0.1em] flex items-center gap-3"
         style={{
           color: "#0a0a0a",
           border: "1px solid #d0d0d0",
@@ -99,7 +87,7 @@ function WalletButton() {
           <Link
             to="/portfolio"
             onClick={() => setOpen(false)}
-            className="block text-[11px] uppercase tracking-[0.15em]"
+            className="vigil-clickable block text-[11px] uppercase tracking-[0.15em]"
             style={{
               color: "#0a0a0a",
               padding: "12px 16px",
@@ -109,20 +97,20 @@ function WalletButton() {
           >
             VIEW PORTFOLIO →
           </Link>
-          <button
-            onClick={() => {
-              disconnect();
-              setOpen(false);
-            }}
-            className="block w-full text-left text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              color: "#666666",
-              padding: "12px 16px",
-              backgroundColor: "transparent",
-            }}
-          >
-            DISCONNECT
-          </button>
+            <button
+              onClick={() => {
+                disconnect();
+                setOpen(false);
+              }}
+              className="block w-full text-left text-[11px] uppercase tracking-[0.15em] vigil-clickable-danger"
+              style={{
+                color: "#666666",
+                padding: "12px 16px",
+                backgroundColor: "transparent",
+              }}
+            >
+              DISCONNECT
+            </button>
         </div>
       )}
     </div>
@@ -141,24 +129,33 @@ function TopNav() {
       >
         <Link
           to="/"
-          className="font-mono text-[13px] tracking-[0.2em] uppercase"
-          style={{ color: "#0a0a0a" }}
+          className="vigil-clickable font-mono font-bold text-[13px] tracking-[0.2em] uppercase trader-bonds-heading"
+          style={{ color: "#0a0a0a", fontWeight: 700 }}
         >
           VIGIL
         </Link>
         <nav className="flex items-center gap-10">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="text-[11px] uppercase tracking-[0.15em] transition-colors"
-              style={{ color: "#666666" }}
-              activeProps={{ style: { color: "#0a0a0a" } }}
-              activeOptions={{ exact: item.to === "/" }}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const navClass =
+              item.to === "/"
+                ? "nav-overview"
+                : item.to === "/leaderboard"
+                ? "nav-leaderboard"
+                : item.to === "/portfolio"
+                ? "nav-portfolio"
+                : "";
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`vigil-clickable text-[11px] uppercase tracking-[0.15em] nav-link ${navClass}`}
+                activeProps={{ style: { color: "#0a0a0a" } }}
+                activeOptions={{ exact: item.to === "/" }}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
         <WalletButton />
       </div>
@@ -166,51 +163,7 @@ function TopNav() {
   );
 }
 
-function StatusBar() {
-  const items = [
-    ["AGENT", "ONLINE"],
-    ["POLICY", "v3.2.1"],
-    ["TVL", "$48.2M"],
-    ["BONDS MONITORED", "1,284"],
-    ["SESSION", "2026-05-15 UTC"],
-  ];
-  return (
-    <div
-      className="fixed left-0 right-0 z-40"
-      style={{
-        top: "64px",
-        backgroundColor: "#f8f8f8",
-        borderBottom: "1px solid #e5e5e5",
-      }}
-    >
-      <div
-        className="flex items-center gap-10 font-mono text-[11px] uppercase tracking-[0.15em]"
-        style={{ padding: "0 40px", height: "36px", color: "#666666" }}
-      >
-        {items.map(([label, value], i) => (
-          <div key={label} className="flex items-center gap-3">
-            {i === 0 && (
-              <span
-                className="inline-block"
-                style={{
-                  width: "6px",
-                  height: "6px",
-                  backgroundColor: "#208042",
-                  boxShadow: `0 0 6px #208042`,
-                }}
-              />
-            )}
-            <span>{label}</span>
-            <span style={{ color: "#0a0a0a" }}>{value}</span>
-            {i < items.length - 1 && (
-              <span style={{ color: "#d0d0d0", marginLeft: "16px" }}>·</span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+
 
 function Footer() {
   return (
@@ -257,9 +210,7 @@ export function VigilLayout({ children }: { children: ReactNode }) {
       className="min-h-screen relative"
       style={{ backgroundColor: "#ffffff", color: "#0a0a0a" }}
     >
-      <GridBackground />
       <TopNav />
-      <StatusBar />
       <main
         className="relative z-10"
         style={{ paddingTop: "100px", minHeight: "calc(100vh - 80px)" }}

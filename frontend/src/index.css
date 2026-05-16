@@ -1,5 +1,5 @@
 :root {
-  --text: #6b6375;
+  --text: #4b4452;
   --text-h: #08060d;
   --bg: #fff;
   --border: #e5e4e7;
@@ -10,12 +10,20 @@
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  /* faint contextual hover colors for nav items (bg + text for visibility) */
+  --hover-overview-bg: rgba(38, 82, 255, 0.1);
+  --hover-overview-text: rgba(38, 82, 255, 0.9);
+  --hover-leaderboard-bg: rgba(170, 59, 255, 0.09);
+  --hover-leaderboard-text: rgba(170, 59, 255, 0.9);
+  --hover-portfolio-bg: rgba(32, 128, 66, 0.09);
+  --hover-portfolio-text: rgba(32, 128, 66, 0.88);
+  --base-font-size: 18px;
+  --sans: "Lexend", system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --mono: var(--sans);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
+  font: var(--base-font-size)/1.6 var(--sans);
+  letter-spacing: 0.2px;
   color-scheme: light;
   color: var(--text);
   background: var(--bg);
@@ -25,6 +33,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
+    --base-font-size: 16px;
     font-size: 16px;
   }
 }
@@ -48,13 +57,14 @@ body {
 h1,
 h2 {
   font-family: var(--heading);
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-h);
 }
 
 h1 {
   font-size: 56px;
-  letter-spacing: -1.68px;
+  line-height: 1.05;
+  letter-spacing: -1px;
   margin: 32px 0;
   @media (max-width: 1024px) {
     font-size: 36px;
@@ -62,9 +72,9 @@ h1 {
   }
 }
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: -0.2px;
   margin: 0 0 8px;
   @media (max-width: 1024px) {
     font-size: 20px;
@@ -72,6 +82,9 @@ h2 {
 }
 p {
   margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(10, 10, 10, 0.85);
 }
 
 code,
@@ -82,9 +95,82 @@ code,
   color: var(--text-h);
 }
 
+.trader-bonds-heading {
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: 900 !important;
+  font-style: normal;
+  letter-spacing: -1.2px;
+  line-height: 0.98;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ensure any elements using .font-mono (utility class) render with Lexend per user request */
+.font-mono {
+  font-family: var(--sans) !important;
+}
+
 code {
   font-size: 15px;
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+/* Navigation link styling */
+.nav-link {
+  color: #666666;
+  font-family: var(--sans);
+  transition:
+    color 160ms ease,
+    opacity 120ms ease;
+}
+
+.nav-overview:hover {
+  color: var(--hover-overview);
+}
+.nav-leaderboard:hover {
+  color: var(--hover-leaderboard);
+}
+.nav-portfolio:hover {
+  color: var(--hover-portfolio);
+}
+
+.nav-link {
+  color: #666666;
+  font-family: var(--sans);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    opacity 120ms ease;
+  display: inline-block;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.nav-overview:hover {
+  color: var(--hover-overview-text);
+  background-color: var(--hover-overview-bg);
+}
+.nav-leaderboard:hover {
+  color: var(--hover-leaderboard-text);
+  background-color: var(--hover-leaderboard-bg);
+}
+.nav-portfolio:hover {
+  color: var(--hover-portfolio-text);
+  background-color: var(--hover-portfolio-bg);
+}
+
+.nav-link:focus {
+  outline: 2px solid rgba(10, 10, 10, 0.06);
+  outline-offset: 2px;
+}
+
+/* Preserve primary/dark button styles on hover (prevent generic hover from overriding) */
+.vigil-clickable-dark:hover {
+  color: #ffffff !important;
+  background-color: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+  box-shadow: none !important;
+  transform: translateY(0) !important;
 }

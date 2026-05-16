@@ -66,10 +66,10 @@ function LandingPage() {
           className="grid"
           style={{ gridTemplateColumns: "1.3fr 1fr", gap: "48px" }}
         >
-          <div>
+          <div className="vigil-reveal">
             <SectionLabel>[SYSTEM] STAKE. WATCH. SLASH.</SectionLabel>
             <h1
-              className="font-bold tracking-tight"
+              className="font-bold tracking-tight trader-bonds-heading"
               style={{
                 fontSize: "72px",
                 lineHeight: 1.02,
@@ -98,7 +98,7 @@ function LandingPage() {
               {address ? (
                 <Link
                   to="/portfolio"
-                  className="text-[11px] uppercase tracking-[0.15em]"
+                  className="vigil-action vigil-clickable-green text-[11px] uppercase tracking-[0.15em]"
                   style={{
                     color: "#fff",
                     backgroundColor: "#208042",
@@ -112,7 +112,7 @@ function LandingPage() {
               ) : (
                 <button
                   onClick={connect}
-                  className="text-[11px] uppercase tracking-[0.15em]"
+                  className="vigil-action vigil-clickable-dark text-[11px] uppercase tracking-[0.15em]"
                   style={{
                     color: "#fff",
                     backgroundColor: "#0a0a0a",
@@ -125,7 +125,7 @@ function LandingPage() {
               )}
               <Link
                 to="/leaderboard"
-                className="text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-action text-[11px] uppercase tracking-[0.15em]"
                 style={{
                   color: "#0a0a0a",
                   border: "1px solid #0a0a0a",
@@ -141,10 +141,12 @@ function LandingPage() {
 
           {/* AGENT FEED */}
           <div
+            className="vigil-panel vigil-reveal"
             style={{
               border: "1px solid #e5e5e5",
               backgroundColor: "#f8f8f8",
               alignSelf: "start",
+              animationDelay: "80ms",
             }}
           >
             <div
@@ -157,6 +159,7 @@ function LandingPage() {
                 style={{ color: "#0a0a0a" }}
               >
                 <span
+                  className="vigil-status-dot"
                   style={{
                     width: "6px",
                     height: "6px",
@@ -171,7 +174,7 @@ function LandingPage() {
               {feed.map((f, i) => (
                 <div
                   key={i}
-                  className="font-mono text-[13px] grid"
+                  className="vigil-log-row font-mono text-[13px] grid"
                   style={{
                     gridTemplateColumns: "70px 70px 1fr",
                     gap: "12px",
@@ -205,10 +208,12 @@ function LandingPage() {
         <div style={{ marginTop: "48px" }}>
           <SectionLabel>TOP BONDED TRADERS</SectionLabel>
           <div
+            className="vigil-panel vigil-reveal"
             style={{
               marginTop: "16px",
               border: "1px solid #e5e5e5",
               backgroundColor: "#f8f8f8",
+              animationDelay: "130ms",
             }}
           >
             <div
@@ -233,7 +238,7 @@ function LandingPage() {
                 key={t.handle}
                 to="/traders/$handle"
                 params={{ handle: t.handle }}
-                className="grid"
+                className="vigil-table-row grid"
                 style={{
                   gridTemplateColumns: "60px 1.4fr 0.8fr 0.8fr 140px",
                   padding: "0 24px",
@@ -285,6 +290,7 @@ function LandingPage() {
         {stats.map(([label, value], i) => (
           <div
             key={label}
+            className="vigil-stat-cell"
             style={{
               padding: "32px 40px",
               borderRight:
@@ -324,40 +330,49 @@ function LandingPage() {
             border: "1px solid #d0d0d0",
           }}
         >
-          {steps.map((s) => (
-            <div
-              key={s.n}
-              style={{ backgroundColor: "#ffffff", padding: "32px 24px" }}
-            >
+          {steps.map((s, idx) => {
+            const colors = ["#eef6ff", "#edf9f2", "#fff8e7"];
+            const bgColor = colors[idx % colors.length];
+            return (
               <div
-                className="font-mono text-[11px] tracking-[0.15em]"
-                style={{ color: "#666666" }}
-              >
-                {s.n}
-              </div>
-              <div
+                key={s.n}
+                className="vigil-step-card"
                 style={{
-                  fontSize: "24px",
-                  fontWeight: 800,
-                  color: "#0a0a0a",
-                  marginTop: "12px",
-                  letterSpacing: "0.04em",
+                  backgroundColor: bgColor,
+                  padding: "32px 24px",
+                  animationDelay: `${idx * 80}ms`,
                 }}
               >
-                {s.h}
+                <div
+                  className="font-mono text-[11px] tracking-[0.15em]"
+                  style={{ color: "#666666" }}
+                >
+                  {s.n}
+                </div>
+                <div
+                  style={{
+                    fontSize: "24px",
+                    fontWeight: 800,
+                    color: "#0a0a0a",
+                    marginTop: "12px",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {s.h}
+                </div>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    lineHeight: 1.6,
+                    color: "rgba(10,10,10,0.7)",
+                    marginTop: "16px",
+                  }}
+                >
+                  {s.body}
+                </p>
               </div>
-              <p
-                style={{
-                  fontSize: "14px",
-                  lineHeight: 1.6,
-                  color: "rgba(10,10,10,0.7)",
-                  marginTop: "16px",
-                }}
-              >
-                {s.body}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </VigilLayout>

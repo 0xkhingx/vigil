@@ -77,7 +77,7 @@ function PortfolioPage() {
           </p>
           <button
             onClick={connect}
-            className="text-[11px] uppercase tracking-[0.15em]"
+            className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
             style={{
               color: "#fff",
               backgroundColor: "#0a0a0a",
@@ -247,7 +247,7 @@ function PortfolioPage() {
                     <Link
                       to="/traders/$handle"
                       params={{ handle: p.trader }}
-                      className="text-[11px] uppercase tracking-[0.15em]"
+                      className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
                       style={{
                         color: "#0a0a0a",
                         border: "1px solid #d0d0d0",
@@ -266,11 +266,11 @@ function PortfolioPage() {
                           step: "details",
                         })
                       }
-                      className="text-[11px] uppercase tracking-[0.15em]"
+                      className="vigil-clickable vigil-clickable-orange text-[11px] uppercase tracking-[0.15em]"
                       style={{
-                        color: "#fff",
-                        backgroundColor: "#cc3300",
-                        border: "1px solid #cc3300",
+                        color: "#9a3412",
+                        backgroundColor: "#fff3e8",
+                        border: "1px solid #f0b58e",
                         padding: "6px 10px",
                       }}
                     >
@@ -337,10 +337,11 @@ function PortfolioPage() {
               </div>
               <Link
                 to="/leaderboard"
-                className="text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-clickable vigil-clickable-green text-[11px] uppercase tracking-[0.15em]"
                 style={{
-                  color: "#fff",
-                  backgroundColor: "#208042",
+                  color: "#166534",
+                  backgroundColor: "#ecfdf3",
+                  border: "1px solid #b7e4c7",
                   padding: "12px 24px",
                   textDecoration: "none",
                 }}
@@ -412,7 +413,7 @@ function ExitModal({
           </SectionLabel>
           <button
             onClick={onClose}
-            className="text-[11px] uppercase tracking-[0.15em]"
+            className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
             style={{ color: "#666666", backgroundColor: "transparent" }}
           >
             CLOSE ✕
@@ -544,7 +545,7 @@ function ExitModal({
             <>
               <button
                 onClick={onClose}
-                className="text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
                 style={{
                   color: "#0a0a0a",
                   border: "1px solid #d0d0d0",
@@ -556,11 +557,11 @@ function ExitModal({
               </button>
               <button
                 onClick={onAdvance}
-                className="text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-clickable vigil-clickable-orange text-[11px] uppercase tracking-[0.15em]"
                 style={{
-                  color: "#fff",
-                  backgroundColor: "#cc3300",
-                  border: "1px solid #cc3300",
+                  color: "#9a3412",
+                  backgroundColor: "#fff3e8",
+                  border: "1px solid #f0b58e",
                   padding: "10px 18px",
                 }}
               >
@@ -572,7 +573,7 @@ function ExitModal({
             <>
               <button
                 onClick={() => onClose()}
-                className="text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
                 style={{
                   color: "#0a0a0a",
                   border: "1px solid #d0d0d0",
@@ -584,11 +585,11 @@ function ExitModal({
               </button>
               <button
                 onClick={onConfirm}
-                className="text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-clickable vigil-clickable-orange text-[11px] uppercase tracking-[0.15em]"
                 style={{
-                  color: "#fff",
-                  backgroundColor: "#cc3300",
-                  border: "1px solid #cc3300",
+                  color: "#9a3412",
+                  backgroundColor: "#fff3e8",
+                  border: "1px solid #f0b58e",
                   padding: "10px 18px",
                 }}
               >
@@ -607,11 +608,11 @@ function ExitModal({
           {state.step === "done" && (
             <button
               onClick={onClose}
-              className="text-[11px] uppercase tracking-[0.15em]"
+              className="vigil-clickable vigil-clickable-green text-[11px] uppercase tracking-[0.15em]"
               style={{
-                color: "#fff",
-                backgroundColor: "#208042",
-                border: "1px solid #208042",
+                color: "#166534",
+                backgroundColor: "#ecfdf3",
+                border: "1px solid #b7e4c7",
                 padding: "10px 18px",
               }}
             >
