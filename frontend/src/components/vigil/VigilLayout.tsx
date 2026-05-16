@@ -15,6 +15,7 @@ const navItems: { to: LinkProps["to"]; label: string }[] = [
   { to: "/", label: "OVERVIEW" },
   { to: "/leaderboard", label: "LEADERBOARD" },
   { to: "/portfolio", label: "PORTFOLIO" },
+  { to: "/agent-log", label: "AGENT LOG" },
 ];
 
 
@@ -143,6 +144,8 @@ function TopNav() {
                 ? "nav-leaderboard"
                 : item.to === "/portfolio"
                 ? "nav-portfolio"
+                : item.to === "/agent-log"
+                ? "nav-agent-log"
                 : "";
             return (
               <Link

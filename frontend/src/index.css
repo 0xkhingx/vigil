@@ -174,3 +174,20 @@ code {
   box-shadow: none !important;
   transform: translateY(0) !important;
 }
+
+.vigil-trader-row {
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.vigil-trader-row:hover {
+  background-color: #f1f1f1;
+}
+
+.vigil-trader-row:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: -2px;
+  background-color: #f1f1f1;
+}

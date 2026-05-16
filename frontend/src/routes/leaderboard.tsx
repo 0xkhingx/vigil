@@ -100,12 +100,30 @@ function LeaderboardPage() {
             fontSize: "15px",
             lineHeight: 1.6,
             color: "rgba(10,10,10,0.7)",
+            marginBottom: "32px",
           }}
         >
           Every trader is continuously scored by the Vigil AI agent. Rank
           reflects risk-adjusted performance against the trader's stated
           mandate. Bonds are slashed without discretion when policy breaks.
         </p>
+
+        {/* Register Link */}
+        <div style={{ marginBottom: "24px" }}>
+          <Link
+            to="/register"
+            className="text-[11px] uppercase tracking-[0.15em] inline-block"
+            style={{
+              color: "#ffffff",
+              backgroundColor: "#0a0a0a",
+              border: "1px solid #0a0a0a",
+              padding: "10px 20px",
+              textDecoration: "none",
+            }}
+          >
+            + REGISTER AS TRADER
+          </Link>
+        </div>
 
         {/* Controls */}
         <div
@@ -209,7 +227,7 @@ function LeaderboardPage() {
                 key={t.handle}
                 to="/traders/$handle"
                 params={{ handle: t.handle }}
-                className="grid"
+                className="vigil-trader-row grid"
                 style={{
                   gridTemplateColumns: "60px 1.4fr 1fr 0.8fr 1fr 1fr 140px",
                   padding: "0 24px",

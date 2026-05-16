@@ -9,11 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as AgentLogRouteImport } from './routes/agent-log'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TradersHandleRouteImport } from './routes/traders.$handle'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
@@ -22,6 +29,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentLogRoute = AgentLogRouteImport.update({
+  id: '/agent-log',
+  path: '/agent-log',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,40 +49,74 @@ const TradersHandleRoute = TradersHandleRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agent-log': typeof AgentLogRoute
   '/leaderboard': typeof LeaderboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/register': typeof RegisterRoute
   '/traders/$handle': typeof TradersHandleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agent-log': typeof AgentLogRoute
   '/leaderboard': typeof LeaderboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/register': typeof RegisterRoute
   '/traders/$handle': typeof TradersHandleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agent-log': typeof AgentLogRoute
   '/leaderboard': typeof LeaderboardRoute
   '/portfolio': typeof PortfolioRoute
+  '/register': typeof RegisterRoute
   '/traders/$handle': typeof TradersHandleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leaderboard' | '/portfolio' | '/traders/$handle'
+  fullPaths:
+    | '/'
+    | '/agent-log'
+    | '/leaderboard'
+    | '/portfolio'
+    | '/register'
+    | '/traders/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leaderboard' | '/portfolio' | '/traders/$handle'
-  id: '__root__' | '/' | '/leaderboard' | '/portfolio' | '/traders/$handle'
+  to:
+    | '/'
+    | '/agent-log'
+    | '/leaderboard'
+    | '/portfolio'
+    | '/register'
+    | '/traders/$handle'
+  id:
+    | '__root__'
+    | '/'
+    | '/agent-log'
+    | '/leaderboard'
+    | '/portfolio'
+    | '/register'
+    | '/traders/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentLogRoute: typeof AgentLogRoute
   LeaderboardRoute: typeof LeaderboardRoute
   PortfolioRoute: typeof PortfolioRoute
+  RegisterRoute: typeof RegisterRoute
   TradersHandleRoute: typeof TradersHandleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio': {
       id: '/portfolio'
       path: '/portfolio'
@@ -83,6 +129,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent-log': {
+      id: '/agent-log'
+      path: '/agent-log'
+      fullPath: '/agent-log'
+      preLoaderRoute: typeof AgentLogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,8 +157,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentLogRoute: AgentLogRoute,
   LeaderboardRoute: LeaderboardRoute,
   PortfolioRoute: PortfolioRoute,
+  RegisterRoute: RegisterRoute,
   TradersHandleRoute: TradersHandleRoute,
 }
 export const routeTree = rootRouteImport
