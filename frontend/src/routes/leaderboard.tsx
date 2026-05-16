@@ -5,7 +5,8 @@ import {
   StatusBadge,
   SectionLabel,
 } from "@/components/vigil/VigilLayout";
-import { traders, type TraderStatus } from "@/lib/vigil-data";
+import { type TraderStatus } from "@/lib/vigil-data";
+import { useTraders } from "@/hooks/useTraders";
 
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
@@ -49,6 +50,7 @@ const getFilterColor = (status: "ALL" | TraderStatus): { bg: string; border: str
 };
 
 function LeaderboardPage() {
+  const { traders } = useTraders();
   const [sortKey, setSortKey] = useState<SortKey>("rank");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [statusFilter, setStatusFilter] = useState<"ALL" | TraderStatus>("ALL");
