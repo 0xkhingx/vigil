@@ -5,8 +5,12 @@ libs = ["node_modules", "lib"]
 remappings = [
     "@nomicfoundation/=node_modules/@nomicfoundation/",
     "@openzeppelin/=node_modules/@openzeppelin/",
-    "forge-std/=node_modules/forge-std/",
+    "forge-std/=lib/forge-std/src/",
     "hardhat/=node_modules/hardhat/",
 ]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[rpc_endpoints]
+arc = "${RPC_URL}"
+
+[etherscan]
+arc = { key = "placeholder", url = "https://explorer.arc.net" }
