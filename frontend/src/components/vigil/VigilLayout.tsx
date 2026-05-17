@@ -1,5 +1,5 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { useState, type ReactNode, type ComponentType } from "react";
+import { type ReactNode, type ComponentType } from "react";
 import {
   Activity,
   ShieldCheck,
@@ -9,7 +9,7 @@ import {
   Github,
   type LucideProps,
 } from "lucide-react";
-import { useWallet, shortAddress } from "@/lib/wallet";
+import { ConnectKitButton } from "connectkit";
 
 const navItems: { to: LinkProps["to"]; label: string }[] = [
   { to: "/", label: "OVERVIEW" },
@@ -21,100 +21,49 @@ const navItems: { to: LinkProps["to"]; label: string }[] = [
 
 
 function WalletButton() {
-  const { address, connect, disconnect } = useWallet();
-  const [open, setOpen] = useState(false);
-
-  if (!address) {
-    return (
-      <button
-        onClick={connect}
-        className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
-        style={{
-          color: "#fff",
-          backgroundColor: "#0a0a0a",
-          border: "1px solid #0a0a0a",
-          padding: "10px 20px",
-        }}
-      >
-        CONNECT WALLET
-      </button>
-    );
-  }
-
   return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="vigil-clickable font-mono text-[13px] uppercase tracking-[0.1em] flex items-center gap-3"
-        style={{
-          color: "#0a0a0a",
-          border: "1px solid #d0d0d0",
-          backgroundColor: "#f8f8f8",
-          padding: "10px 20px",
-        }}
-      >
-        <span
-          style={{
-            width: "6px",
-            height: "6px",
-            backgroundColor: "#0a0a0a",
-            display: "inline-block",
-          }}
-        />
-        {shortAddress(address)}
-      </button>
-      {open && (
-        <div
-          className="absolute right-0"
-          style={{
-            top: "calc(100% + 8px)",
-            backgroundColor: "#ffffff",
-            border: "1px solid #d0d0d0",
-            minWidth: "240px",
-            zIndex: 60,
-          }}
-        >
-          <div
-            className="font-mono text-[11px]"
-            style={{
-              color: "#666666",
-              padding: "12px 16px",
-              borderBottom: "1px solid #e5e5e5",
-              wordBreak: "break-all",
-            }}
-          >
-            {address}
-          </div>
-          <Link
-            to="/portfolio"
-            onClick={() => setOpen(false)}
-            className="vigil-clickable block text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              color: "#0a0a0a",
-              padding: "12px 16px",
-              borderBottom: "1px solid #e5e5e5",
-              textDecoration: "none",
-            }}
-          >
-            VIEW PORTFOLIO →
-          </Link>
+    <ConnectKitButton.Custom>
+      {({ isConnected, show, truncatedAddress, ensName }) => {
+        if (!isConnected) {
+          return (
             <button
-              onClick={() => {
-                disconnect();
-                setOpen(false);
-              }}
-              className="block w-full text-left text-[11px] uppercase tracking-[0.15em] vigil-clickable-danger"
+              onClick={show}
+              className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
               style={{
-                color: "#666666",
-                padding: "12px 16px",
-                backgroundColor: "transparent",
+                color: "#fff",
+                backgroundColor: "#0a0a0a",
+                border: "1px solid #333",
+                padding: "10px 20px",
               }}
             >
-              DISCONNECT
+              CONNECT WALLET
             </button>
-        </div>
-      )}
-    </div>
+          );
+        }
+        return (
+          <button
+            onClick={show}
+            className="vigil-clickable font-mono text-[13px] uppercase tracking-[0.1em] flex items-center gap-3"
+            style={{
+              color: "#0a0a0a",
+              border: "1px solid #d0d0d0",
+              backgroundColor: "#f8f8f8",
+              padding: "10px 20px",
+            }}
+          >
+            <span
+              style={{
+                width: "6px",
+                height: "6px",
+                backgroundColor: "#0a0a0a",
+                display: "inline-block",
+              }}
+            />
+            {ensName ?? truncatedAddress}
+          </button>
+        );
+      }}
+    </ConnectKitButton.Custom>
   );
 }
 
