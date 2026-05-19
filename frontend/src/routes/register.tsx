@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useWaitForTransactionReceipt } from "wagmi";
 import {
   VigilLayout,
   SectionLabel,
 } from "@/components/vigil/VigilLayout";
+import { usePostBond, useApproveUSDC, VIGIL_ADDRESS } from "@/lib/contracts";
+import { useAccount } from "wagmi";
+import { useArcNetwork } from "@/lib/wagmi";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -34,6 +38,10 @@ const thresholds = [
 ] as const;
 
 function RegisterPage() {
+  const { address } = useAccount();
+  const { isArcTestnet, switchToArc, isPending: isSwitching } = useArcNetwork();
+  const { approve, data: approveHash, isPending: isApproving } = useApproveUSDC();
+  const { postBond, data: bondHash, isPending: isBonding } = usePostBond();
   const [handle, setHandle] = useState("");
   const [mandateStyle, setMandateStyle] = useState("");
   const [maxLeverage, setMaxLeverage] = useState("");
@@ -41,9 +49,60 @@ function RegisterPage() {
   const [venues, setVenues] = useState("");
   const [bondAmount, setBondAmount] = useState("");
   const [threshold, setThreshold] = useState<ThresholdType>("STANDARD");
+  const [step, setStep] = useState<"approve" | "bond" | "done">("approve");
+
+  const { isSuccess: approveSuccess } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+  const { isSuccess: bondSuccess } = useWaitForTransactionReceipt({
+    hash: bondHash,
+  });
 
   const bondValue = Number.parseFloat(bondAmount) || 0;
   const thresholdDetails = thresholds.find((t) => t.label === threshold) || thresholds[1];
+
+  useEffect(() => {
+    if (approveSuccess && step === "approve") {
+      setStep("bond");
+    }
+  }, [approveSuccess, step]);
+
+  useEffect(() => {
+    if (bondSuccess) {
+      setStep("done");
+    }
+  }, [bondSuccess]);
+
+  const handleSubmit = () => {
+    if (!address) return;
+    if (!isArcTestnet) {
+      switchToArc();
+      return;
+    }
+    if (!bondAmount || bondValue <= 0) return;
+
+    if (step === "approve") {
+      approve(bondValue);
+    } else if (step === "bond") {
+      postBond(bondValue, thresholdDetails.score, 80);
+    }
+  };
+
+  const buttonLabel = !address
+    ? "CONNECT WALLET FIRST"
+    : isSwitching
+      ? "SWITCHING..."
+      : !isArcTestnet
+        ? "SWITCH TO ARC TESTNET"
+        : step === "done"
+          ? "BOND POSTED ✓"
+          : isApproving
+            ? "APPROVING..."
+            : step === "approve"
+              ? "APPROVE USDC"
+              : isBonding
+                ? "POSTING..."
+                : "POST BOND";
 
   return (
     <VigilLayout>
@@ -500,6 +559,8 @@ function RegisterPage() {
 
         {/* Post Bond Button */}
         <button
+          onClick={handleSubmit}
+          disabled={!address || isSwitching || isApproving || isBonding || bondValue <= 0}
           style={{
             width: "100%",
             padding: "16px 24px",
@@ -510,12 +571,30 @@ function RegisterPage() {
             fontWeight: 600,
             textTransform: "uppercase",
             letterSpacing: "0.15em",
-            cursor: "pointer",
+            cursor:
+              !address || isSwitching || isApproving || isBonding || bondValue <= 0
+                ? "not-allowed"
+                : "pointer",
             marginBottom: "16px",
           }}
         >
-          POST BOND
+          {buttonLabel}
         </button>
+
+        {step === "done" && (
+          <div
+            className="font-mono text-[11px]"
+            style={{
+              color: "#0a0a0a",
+              lineHeight: 1.6,
+              maxWidth: "800px",
+              marginBottom: "16px",
+            }}
+          >
+            Your bond is live. The agent is monitoring your position. Your trader ID will appear
+            on the leaderboard shortly.
+          </div>
+        )}
 
         {/* Disclaimer */}
         <div

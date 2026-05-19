@@ -7,9 +7,16 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { WagmiProvider } from "wagmi";
+import { useEffect, useRef } from "react";
+import { WagmiProvider, useAccount, useChainId } from "wagmi";
 import { ConnectKitProvider } from "connectkit";
-import { config } from "@/lib/wagmi";
+import { toast } from "sonner";
+import {
+  ARC_TESTNET_CHAIN_HEX,
+  ARC_TESTNET_CHAIN_ID,
+  ARC_TESTNET_RPC_URL,
+  config,
+} from "@/lib/wagmi";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 
@@ -108,10 +115,100 @@ function RootComponent() {
             "--ck-accent-text-color": "#000000",
           }}
         >
+          <ArcNetworkGate />
           <Outlet />
           <Toaster theme="light" position="bottom-right" />
         </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
+}
+
+type EthereumProvider = {
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+};
+
+function ArcNetworkGate() {
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const prevConnectedRef = useRef(false);
+  const prevChainIdRef = useRef<number | undefined>(undefined);
+  const wasOnArcRef = useRef(false);
+  const isRequestInFlightRef = useRef(false);
+  const lastPromptedChainRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    const provider = typeof window !== "undefined" ? ((window as Window & {
+      ethereum?: EthereumProvider;
+    }).ethereum) : undefined;
+
+    if (!isConnected || !address) {
+      prevConnectedRef.current = false;
+      prevChainIdRef.current = chainId;
+      wasOnArcRef.current = false;
+      isRequestInFlightRef.current = false;
+      lastPromptedChainRef.current = undefined;
+      return;
+    }
+
+    const autoSwitchStorageKey = `vigil:arc-autoswitched:${address.toLowerCase()}`;
+    const hasAutoSwitchedBefore = window.localStorage.getItem(autoSwitchStorageKey) === "true";
+    const isFirstConnectedFrame = !prevConnectedRef.current;
+    const isOnArc = chainId === ARC_TESTNET_CHAIN_ID;
+    const manuallySwitchedAway =
+      prevConnectedRef.current &&
+      prevChainIdRef.current === ARC_TESTNET_CHAIN_ID &&
+      chainId !== ARC_TESTNET_CHAIN_ID &&
+      wasOnArcRef.current;
+    const shouldPromptOnFirstConnect =
+      isFirstConnectedFrame && !isOnArc && !hasAutoSwitchedBefore;
+    const shouldPrompt = shouldPromptOnFirstConnect || manuallySwitchedAway;
+
+    if (isOnArc) {
+      wasOnArcRef.current = true;
+      lastPromptedChainRef.current = undefined;
+    }
+
+    if (provider && shouldPrompt && !isRequestInFlightRef.current && lastPromptedChainRef.current !== chainId) {
+      isRequestInFlightRef.current = true;
+      lastPromptedChainRef.current = chainId;
+
+      provider
+        .request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: ARC_TESTNET_CHAIN_HEX,
+              chainName: "Arc Testnet",
+              rpcUrls: [ARC_TESTNET_RPC_URL],
+              nativeCurrency: {
+                name: "USDC",
+                symbol: "USDC",
+                decimals: 6,
+              },
+            },
+          ],
+        })
+        .then(() => {
+          window.localStorage.setItem(autoSwitchStorageKey, "true");
+          wasOnArcRef.current = true;
+        })
+        .catch((error: unknown) => {
+          const message = error instanceof Error ? error.message.toLowerCase() : "";
+          if (message.includes("rejected")) {
+            toast.error("ARC NETWORK SWITCH REJECTED", {
+              description: "Switch to Arc Testnet to bond and manage USDC positions.",
+            });
+          }
+        })
+        .finally(() => {
+          isRequestInFlightRef.current = false;
+        });
+    }
+
+    prevConnectedRef.current = isConnected;
+    prevChainIdRef.current = chainId;
+  }, [address, chainId, isConnected]);
+
+  return null;
 }

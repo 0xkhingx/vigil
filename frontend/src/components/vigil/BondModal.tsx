@@ -1,9 +1,18 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ChevronDown, X } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, LoaderCircle, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactElement, ReactNode } from "react";
+import { parseUnits } from "viem";
+import { useAccount, useChainId } from "wagmi";
 import { toast } from "sonner";
 import { ACCENT, StatusBadge } from "@/components/vigil/VigilLayout";
+import {
+  useApproveUSDC,
+  useStake,
+  useUsdcAllowance,
+  useUsdcBalance,
+} from "@/lib/contracts";
+import { ARC_TESTNET_CHAIN_ID } from "@/lib/wagmi";
 import type { Trader } from "@/lib/vigil-data";
 
 interface BondModalProps {
@@ -37,20 +46,122 @@ const formatUsdc = (value: number) =>
   }).format(value);
 
 export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const {
+    approve,
+    isPending: isApproving,
+    isConfirming: isApproveConfirming,
+    isSuccess: approveSuccess,
+    error: approveError,
+  } = useApproveUSDC();
+  const {
+    stake,
+    isPending: isStaking,
+    isConfirming: isStakeConfirming,
+    isSuccess: stakeSuccess,
+    error: stakeError,
+  } = useStake();
+  const { allowance, refetch: refetchAllowance } = useUsdcAllowance(address);
+  const { balance } = useUsdcBalance(address);
   const [amount, setAmount] = useState("1000");
   const [duration, setDuration] = useState<(typeof durations)[number]>(30);
   const [threshold, setThreshold] = useState<(typeof slashThresholds)[number]>(
     slashThresholds[1],
   );
   const [slashDetailsOpen, setSlashDetailsOpen] = useState(false);
+  const [step, setStep] = useState<"approve" | "stake" | "done">("approve");
+  const hasSubmittedStakeRef = useRef(false);
+  const closeTimeoutRef = useRef<number | null>(null);
 
-  const amountValue = Number.parseFloat(amount) || 0;
-  const protocolFee = amountValue * 0.02;
-  const estimatedReturn = amountValue * 0.08 * (duration / 365);
-  const isValidAmount = Number.isFinite(amountValue) && amountValue > 0;
+  const bondAmount = Number.parseFloat(amount) || 0;
+  const protocolFee = bondAmount * 0.02;
+  const estimatedReturn = bondAmount * 0.08 * (duration / 365);
+  const isValidAmount = Number.isFinite(bondAmount) && bondAmount > 0;
+  const parsedBondAmount = parseUsdcAmount(amount);
+  const hasEnoughAllowance = parsedBondAmount !== null && allowance >= parsedBondAmount;
+  const hasEnoughBalance = parsedBondAmount !== null && balance >= parsedBondAmount;
+  const isWrongNetwork = chainId !== ARC_TESTNET_CHAIN_ID;
+  const isBusy = isApproving || isApproveConfirming || isStaking || isStakeConfirming;
+
+  useEffect(() => {
+    if (!isOpen || !isConnected || step === "done") return;
+    setStep(hasEnoughAllowance ? "stake" : "approve");
+  }, [hasEnoughAllowance, isConnected, isOpen, step]);
+
+  useEffect(() => {
+    if (!approveSuccess) return;
+    hasSubmittedStakeRef.current = false;
+    void refetchAllowance();
+    setStep("stake");
+  }, [approveSuccess, refetchAllowance]);
+
+  useEffect(() => {
+    if (!stakeSuccess) return;
+    hasSubmittedStakeRef.current = false;
+    setStep("done");
+    closeTimeoutRef.current = window.setTimeout(() => {
+      onClose();
+    }, 2000);
+  }, [onClose, stakeSuccess]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetModalState();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isConnected) {
+      resetModalState();
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (!approveError) return;
+    toastWriteError(approveError, "APPROVE FAILED");
+  }, [approveError]);
+
+  useEffect(() => {
+    if (!stakeError) return;
+    hasSubmittedStakeRef.current = false;
+    toastWriteError(stakeError, "BOND FAILED");
+  }, [stakeError]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  function resetModalState() {
+    hasSubmittedStakeRef.current = false;
+    if (closeTimeoutRef.current !== null) {
+      window.clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setAmount("1000");
+    setDuration(30);
+    setThreshold(slashThresholds[1]);
+    setSlashDetailsOpen(false);
+    setStep("approve");
+  }
+
+  const buttonLabel =
+    step === "done"
+      ? "BONDED ✓"
+      : isStaking || isStakeConfirming
+        ? "STAKING..."
+        : isApproving || isApproveConfirming
+          ? "APPROVING..."
+          : step === "stake"
+            ? "CONFIRM BOND"
+            : "APPROVE USDC";
 
   const summaryRows = [
-    ["Bond Amount", `${formatUsdc(amountValue)} USDC`],
+    ["Bond Amount", `${formatUsdc(bondAmount)} USDC`],
     ["Duration", `${duration}D`],
     ["Slash Threshold", `${threshold.label} / SCORE < ${threshold.score}`],
     ["Est. Return", `${formatUsdc(estimatedReturn)} USDC`],
@@ -58,6 +169,20 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
   ];
 
   const handleConfirmBond = () => {
+    if (!address || !isConnected) {
+      toast.error("WALLET NOT CONNECTED", {
+        description: "Connect your wallet before bonding USDC.",
+      });
+      return;
+    }
+
+    if (isWrongNetwork) {
+      toast.error("WRONG NETWORK", {
+        description: "Switch to Arc Testnet before approving or staking.",
+      });
+      return;
+    }
+
     if (!isValidAmount) {
       toast.error("INVALID BOND AMOUNT", {
         description: "Enter a USDC amount greater than zero.",
@@ -65,10 +190,38 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
       return;
     }
 
-    toast.success("BOND CONFIRMED", {
-      description: `${formatUsdc(amountValue)} USDC bonded to ${trader.handle} for ${duration}D.`,
-    });
-    onClose();
+    if (!parsedBondAmount) {
+      toast.error("INVALID BOND AMOUNT", {
+        description: "USDC supports up to 6 decimal places.",
+      });
+      return;
+    }
+
+    if (!hasEnoughBalance) {
+      toast.error("INSUFFICIENT USDC BALANCE", {
+        description: "Your wallet balance is below the amount required for this bond.",
+      });
+      return;
+    }
+
+    if (isBusy) {
+      return;
+    }
+
+    if (step === "approve") {
+      if (hasEnoughAllowance) {
+        setStep("stake");
+        return;
+      }
+
+      approve(bondAmount);
+      return;
+    }
+
+    if (step === "stake" && !hasSubmittedStakeRef.current) {
+      hasSubmittedStakeRef.current = true;
+      stake(trader.rank, bondAmount);
+    }
   };
 
   return (
@@ -225,20 +378,33 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
             <button
               type="button"
               onClick={handleConfirmBond}
-              disabled={!isValidAmount}
+              disabled={!isValidAmount || isBusy || step === "done"}
               className="w-full text-[12px] font-bold uppercase tracking-[0.16em]"
               style={{
-                backgroundColor: isValidAmount ? ACCENT.green : "#2f3a33",
-                border: isValidAmount ? `1px solid ${ACCENT.green}` : "1px solid #2f3a33",
-                color: isValidAmount ? "#0a0a0a" : "#8fa095",
-                cursor: isValidAmount ? "pointer" : "not-allowed",
-                opacity: isValidAmount ? 1 : 0.72,
+                backgroundColor: isValidAmount && !isBusy ? ACCENT.green : "#2f3a33",
+                border:
+                  isValidAmount && !isBusy ? `1px solid ${ACCENT.green}` : "1px solid #2f3a33",
+                color: isValidAmount && !isBusy ? "#0a0a0a" : "#8fa095",
+                cursor: isValidAmount && !isBusy ? "pointer" : "not-allowed",
+                opacity: isValidAmount && !isBusy ? 1 : 0.72,
                 marginTop: "18px",
                 padding: "15px 18px",
               }}
             >
-              CONFIRM BOND
+              <span className="inline-flex items-center justify-center gap-2">
+                {isBusy && <LoaderCircle size={14} className="animate-spin" aria-hidden />}
+                {buttonLabel}
+              </span>
             </button>
+
+            {step === "done" && (
+              <p
+                className="text-[11px] uppercase tracking-[0.15em]"
+                style={{ color: ACCENT.green, marginTop: "12px" }}
+              >
+                Bond confirmed. The agent is now monitoring this position.
+              </p>
+            )}
 
             <div style={{ marginTop: "12px", borderTop: "1px solid #242424" }}>
               <button
@@ -275,6 +441,29 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
+}
+
+function parseUsdcAmount(value: string) {
+  try {
+    return parseUnits(value || "0", 6);
+  } catch {
+    return null;
+  }
+}
+
+function toastWriteError(error: unknown, fallbackTitle: string) {
+  const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+  if (message.includes("rejected")) {
+    toast.error("TRANSACTION REJECTED", {
+      description: "The wallet request was rejected before it was submitted.",
+    });
+    return;
+  }
+
+  toast.error(fallbackTitle, {
+    description: error instanceof Error ? error.message : "The transaction could not be completed.",
+  });
 }
 
 function ContextItem({
