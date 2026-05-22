@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,7 +19,6 @@
     "ethers": "^6.16.0",
     "express": "^5.2.1",
     "groq-sdk": "^1.2.0",
-    "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
