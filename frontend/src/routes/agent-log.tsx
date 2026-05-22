@@ -98,13 +98,13 @@ function AgentLogPage() {
 
   return (
     <VigilLayout>
-      <div style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
         {/* Section Label */}
         <SectionLabel>[SYSTEM] AGENT ACTIVITY LOG</SectionLabel>
 
         {/* Headline */}
         <h1
-          className="font-bold tracking-tight trader-bonds-heading"
+          className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl"
           style={{
             fontSize: "72px",
             lineHeight: 1.05,
@@ -118,6 +118,7 @@ function AgentLogPage() {
 
         {/* Filter and Search Bar */}
         <div
+          className="max-md:!flex-col max-md:!items-stretch"
           style={{
             marginTop: "32px",
             display: "flex",
@@ -129,7 +130,7 @@ function AgentLogPage() {
           }}
         >
           {/* Filter Buttons */}
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="max-md:!flex-wrap" style={{ display: "flex", gap: "12px" }}>
             {(["ALL", "SCORE", "WARN", "POLICY", "SLASH"] as FilterType[]).map(
               (filter) => (
                 <button
@@ -161,7 +162,7 @@ function AgentLogPage() {
             placeholder="SEARCH TRADER"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className="font-mono text-[13px] uppercase tracking-[0.1em]"
+            className="font-mono text-[13px] uppercase tracking-[0.1em] max-md:!w-full"
             style={{
               color: "#0a0a0a",
               backgroundColor: "#f8f8f8",
@@ -174,7 +175,7 @@ function AgentLogPage() {
         </div>
 
         {/* Log Entries */}
-        <div style={{ marginTop: "32px" }}>
+        <div className="max-md:!overflow-x-auto" style={{ marginTop: "32px" }}>
           {paginatedEntries.length > 0 ? (
             paginatedEntries.map((entry, pageIndex) => {
               const globalIndex =
@@ -330,6 +331,7 @@ function AgentLogPage() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div
+            className="max-md:!flex-wrap"
             style={{
               marginTop: "32px",
               display: "flex",

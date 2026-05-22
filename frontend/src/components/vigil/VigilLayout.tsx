@@ -1,5 +1,5 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { type ReactNode, type ComponentType } from "react";
+import { type ReactNode, type ComponentType, useState } from "react";
 import {
   Activity,
   ShieldCheck,
@@ -7,6 +7,8 @@ import {
   AlertTriangle,
   Slash,
   Github,
+  Menu,
+  X,
   type LucideProps,
 } from "lucide-react";
 import { ConnectKitButton } from "connectkit";
@@ -28,7 +30,7 @@ function WalletButton() {
           return (
             <button
               onClick={show}
-              className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
+              className="vigil-clickable text-[11px] uppercase tracking-[0.15em] max-md:!text-[10px] max-md:!px-3 max-md:!py-2"
               style={{
                 color: "#fff",
                 backgroundColor: "#0a0a0a",
@@ -43,7 +45,7 @@ function WalletButton() {
         return (
           <button
             onClick={show}
-            className="vigil-clickable font-mono text-[13px] uppercase tracking-[0.1em] flex items-center gap-3"
+            className="vigil-clickable font-mono text-[13px] uppercase tracking-[0.1em] flex items-center gap-3 max-md:!text-[11px] max-md:!px-3 max-md:!py-2"
             style={{
               color: "#0a0a0a",
               border: "1px solid #d0d0d0",
@@ -68,23 +70,26 @@ function WalletButton() {
 }
 
 function TopNav() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50"
       style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #e5e5e5" }}
     >
       <div
-        className="flex items-center justify-between"
+        className="flex items-center justify-between max-md:!px-4"
         style={{ padding: "0 40px", height: "64px" }}
       >
         <Link
           to="/"
           className="vigil-clickable font-mono font-bold text-[13px] tracking-[0.2em] uppercase trader-bonds-heading"
           style={{ color: "#0a0a0a", fontWeight: 700 }}
+          onClick={() => setMobileMenuOpen(false)}
         >
           VIGIL
         </Link>
-        <nav className="flex items-center gap-10">
+        <nav className="flex items-center gap-10 max-md:hidden">
           {navItems.map((item) => {
             const navClass =
               item.to === "/"
@@ -109,8 +114,64 @@ function TopNav() {
             );
           })}
         </nav>
-        <WalletButton />
+        <div className="max-md:hidden">
+          <WalletButton />
+        </div>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden flex items-center justify-center"
+          aria-label="Toggle menu"
+          style={{
+            background: "none",
+            border: "1px solid #333",
+            color: "#0a0a0a",
+            cursor: "pointer",
+            padding: "8px 10px",
+          }}
+        >
+          {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </div>
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden"
+          style={{
+            borderTop: "1px solid #e5e5e5",
+            backgroundColor: "#ffffff",
+            padding: "12px 16px",
+          }}
+        >
+          <div className="flex flex-col" style={{ gap: "4px" }}>
+            {navItems.map((item) => {
+              const navClass =
+                item.to === "/"
+                  ? "nav-overview"
+                  : item.to === "/leaderboard"
+                  ? "nav-leaderboard"
+                  : item.to === "/portfolio"
+                  ? "nav-portfolio"
+                  : item.to === "/agent-log"
+                  ? "nav-agent-log"
+                  : "";
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`vigil-clickable text-[11px] uppercase tracking-[0.15em] nav-link ${navClass} block py-3`}
+                  activeProps={{ style: { color: "#0a0a0a" } }}
+                  activeOptions={{ exact: item.to === "/" }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+            <div className="pt-3" style={{ borderTop: "1px solid #e5e5e5" }}>
+              <WalletButton />
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
@@ -120,14 +181,14 @@ function TopNav() {
 function Footer() {
   return (
     <footer
-      className="relative z-10"
+      className="relative z-10 max-md:!px-4"
       style={{
         backgroundColor: "#f8f8f8",
         borderTop: "1px solid #e5e5e5",
         padding: "24px 40px",
       }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between max-md:!flex-col max-md:!items-start max-md:!gap-2">
         <span
           className="font-mono text-[13px] uppercase tracking-[0.2em]"
           style={{ color: "#0a0a0a" }}
@@ -164,7 +225,7 @@ export function VigilLayout({ children }: { children: ReactNode }) {
     >
       <TopNav />
       <main
-        className="relative z-10"
+        className="relative z-10 max-md:!pt-16"
         style={{ paddingTop: "100px", minHeight: "calc(100vh - 80px)" }}
       >
         {children}

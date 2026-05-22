@@ -49,10 +49,10 @@ function PortfolioPage() {
   if (!address) {
     return (
       <VigilLayout>
-        <div style={{ padding: "48px 40px" }}>
+        <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
           <SectionLabel>[ACCOUNT] PORTFOLIO</SectionLabel>
           <h1
-            className="font-bold tracking-tight"
+            className="font-bold tracking-tight max-md:!text-4xl"
             style={{
               fontSize: "64px",
               lineHeight: 1.05,
@@ -106,10 +106,10 @@ function PortfolioPage() {
 
   return (
     <VigilLayout>
-      <div style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
         <SectionLabel>[ACCOUNT] PORTFOLIO · {shortAddress(address)}</SectionLabel>
         <h1
-          className="font-bold tracking-tight"
+          className="font-bold tracking-tight max-md:!text-4xl"
           style={{
             fontSize: "64px",
             lineHeight: 1.05,
@@ -134,7 +134,7 @@ function PortfolioPage() {
         </p>
 
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-2"
           style={{
             gridTemplateColumns: "repeat(4, 1fr)",
             marginTop: "48px",
@@ -172,7 +172,7 @@ function PortfolioPage() {
         </div>
 
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-1"
           style={{
             gridTemplateColumns: "1.4fr 1fr",
             gap: "24px",
@@ -181,6 +181,7 @@ function PortfolioPage() {
         >
           {/* POSITIONS */}
           <div
+            className="max-md:!overflow-x-auto"
             style={{ border: "1px solid #e5e5e5", backgroundColor: "#f8f8f8" }}
           >
             <div
@@ -388,7 +389,7 @@ function ExitModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
+      className="fixed inset-0 z-[100] flex items-center justify-center max-md:!p-4"
       style={{ backgroundColor: "rgba(0,0,0,0.7)", padding: "40px" }}
       onClick={onClose}
     >

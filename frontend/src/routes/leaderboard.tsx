@@ -79,10 +79,10 @@ function LeaderboardPage() {
 
   return (
     <VigilLayout>
-      <div style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
         <SectionLabel>[INDEX] BONDED TRADERS</SectionLabel>
         <h1
-          className="font-bold tracking-tight"
+          className="font-bold tracking-tight max-md:!text-4xl"
           style={{
             fontSize: "64px",
             lineHeight: 1.05,
@@ -127,6 +127,7 @@ function LeaderboardPage() {
 
         {/* Controls */}
         <div
+          className="max-md:!flex-col max-md:!items-stretch"
           style={{
             marginTop: "40px",
             border: "1px solid #e5e5e5",
@@ -139,9 +140,9 @@ function LeaderboardPage() {
             flexWrap: "wrap",
           }}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 max-md:!flex-col max-md:!items-start">
             <SectionLabel>FILTER</SectionLabel>
-            <div className="flex">
+            <div className="flex max-md:!flex-wrap">
               {statusFilters.map((s) => {
                 const active = statusFilter === s;
                 const colors = getFilterColor(s);
@@ -186,6 +187,7 @@ function LeaderboardPage() {
 
         {/* Table */}
         <div
+          className="max-md:!overflow-x-auto"
           style={{
             marginTop: "16px",
             border: "1px solid #e5e5e5",

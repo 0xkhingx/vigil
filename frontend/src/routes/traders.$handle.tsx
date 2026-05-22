@@ -32,7 +32,7 @@ export const Route = createFileRoute("/traders/$handle")({
   }),
   notFoundComponent: () => (
     <VigilLayout>
-      <div style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
         <SectionLabel>[404] TRADER NOT FOUND</SectionLabel>
         <Link
           to="/leaderboard"
@@ -123,13 +123,13 @@ function TraderPage() {
 
   return (
     <VigilLayout>
-      <div style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
         {/* Section Label */}
         <SectionLabel>[TRADER] PROFILE</SectionLabel>
 
         {/* Headline */}
         <h1
-          className="font-bold tracking-tight"
+          className="font-bold tracking-tight max-md:!text-4xl"
           style={{
             fontSize: "72px",
             lineHeight: 1.05,
@@ -145,10 +145,10 @@ function TraderPage() {
 
         {/* Header row: AI score, status badge, wallet address */}
         <div
-          className="flex items-center justify-between"
+          className="flex items-center justify-between max-md:!flex-col max-md:!items-start max-md:!gap-4"
           style={{ marginTop: "32px", paddingBottom: "24px", borderBottom: "1px solid #e5e5e5" }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+          <div className="max-md:!flex-wrap" style={{ display: "flex", alignItems: "center", gap: "32px" }}>
             <div>
               <div
                 className="text-[11px] uppercase tracking-[0.15em]"
@@ -157,7 +157,7 @@ function TraderPage() {
                 AI SCORE
               </div>
               <div
-                className="font-mono font-bold"
+                className="font-mono font-bold max-md:!text-3xl"
                 style={{ fontSize: "48px", lineHeight: 1, color: "#0a0a0a" }}
               >
                 {t.aiScore.toFixed(1)}
@@ -174,7 +174,7 @@ function TraderPage() {
 
         {/* Two-column layout: Stats and Agent Log */}
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-1"
           style={{
             gridTemplateColumns: "1fr 1fr",
             gap: "24px",
@@ -300,6 +300,7 @@ function TraderPage() {
 
         {/* Stakers Table */}
         <div
+          className="max-md:!overflow-x-auto"
           style={{
             marginTop: "32px",
             border: "1px solid #e5e5e5",

@@ -242,7 +242,7 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
           }}
         >
           <div
-            className="bond-modal-scroll"
+            className="bond-modal-scroll max-md:!p-4"
             style={{
               maxHeight: "inherit",
               overflowY: "auto",
@@ -526,7 +526,7 @@ function ToggleButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex min-h-11 flex-col items-center justify-center gap-1 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.12em]"
+      className="flex min-h-11 max-md:!min-h-9 flex-col items-center justify-center gap-1 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.12em]"
       style={{
         backgroundColor: active ? tint : "#0b0b0b",
         border: active ? `1px solid ${tint}` : "1px solid #333333",

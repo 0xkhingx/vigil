@@ -54,15 +54,15 @@ function LandingPage() {
   return (
     <VigilLayout>
       {/* HERO */}
-      <div style={{ padding: "48px 40px 0 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px 0 40px" }}>
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-1"
           style={{ gridTemplateColumns: "1.3fr 1fr", gap: "48px" }}
         >
           <div className="vigil-reveal">
             <SectionLabel>[SYSTEM] STAKE. WATCH. SLASH.</SectionLabel>
             <h1
-              className="font-bold tracking-tight trader-bonds-heading"
+              className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl md:!text-5xl"
               style={{
                 fontSize: "72px",
                 lineHeight: 1.02,
@@ -87,38 +87,38 @@ function LandingPage() {
               trader's stated mandate, and automatically slashes the bond the
               moment risk discipline breaks. No discretion. No grace period.
             </p>
-            <div className="flex items-center gap-3" style={{ marginTop: "40px" }}>
+            <div className="flex items-center gap-3 max-md:!flex-col max-md:!items-stretch" style={{ marginTop: "40px" }}>
               {address ? (
-                <Link
-                  to="/portfolio"
-                  className="vigil-action vigil-clickable-green text-[11px] uppercase tracking-[0.15em]"
-                  style={{
-                    color: "#fff",
-                    backgroundColor: "#208042",
-                    border: "1px solid #208042",
-                    padding: "14px 24px",
-                    textDecoration: "none",
-                  }}
-                >
-                  OPEN PORTFOLIO →
-                </Link>
+                  <Link
+                    to="/portfolio"
+                    className="vigil-action vigil-clickable-green text-[11px] uppercase tracking-[0.15em] max-md:!w-full max-md:!text-center"
+                    style={{
+                      color: "#fff",
+                      backgroundColor: "#208042",
+                      border: "1px solid #208042",
+                      padding: "14px 24px",
+                      textDecoration: "none",
+                    }}
+                  >
+                    OPEN PORTFOLIO →
+                  </Link>
               ) : (
-                <button
-                  onClick={connect}
-                  className="vigil-action vigil-clickable-dark text-[11px] uppercase tracking-[0.15em]"
-                  style={{
-                    color: "#fff",
-                    backgroundColor: "#0a0a0a",
-                    border: "1px solid #0a0a0a",
-                    padding: "14px 24px",
-                  }}
-                >
-                  CONNECT WALLET
-                </button>
+                  <button
+                    onClick={connect}
+                    className="vigil-action vigil-clickable-dark text-[11px] uppercase tracking-[0.15em] max-md:!w-full max-md:!text-center"
+                    style={{
+                      color: "#fff",
+                      backgroundColor: "#0a0a0a",
+                      border: "1px solid #0a0a0a",
+                      padding: "14px 24px",
+                    }}
+                  >
+                    CONNECT WALLET
+                  </button>
               )}
               <Link
                 to="/leaderboard"
-                className="vigil-action text-[11px] uppercase tracking-[0.15em]"
+                className="vigil-action text-[11px] uppercase tracking-[0.15em] max-md:!w-full max-md:!text-center"
                 style={{
                   color: "#0a0a0a",
                   border: "1px solid #0a0a0a",
@@ -134,7 +134,7 @@ function LandingPage() {
 
           {/* ENTRY POINT CARDS - OVERLAPPING */}
           <div
-            className="vigil-reveal"
+            className="vigil-reveal max-md:!h-[360px]"
             style={{
               position: "relative",
               alignSelf: "start",
@@ -145,7 +145,7 @@ function LandingPage() {
             {/* I WANT TO STAKE CARD - Behind */}
             <Link
               to="/leaderboard"
-              className="vigil-entry-card"
+              className="vigil-entry-card max-md:!w-[55%]"
               style={{
                 position: "absolute",
                 top: 0,
@@ -227,7 +227,7 @@ function LandingPage() {
             {/* I AM A TRADER CARD - Front */}
             <Link
               to="/register"
-              className="vigil-entry-card"
+              className="vigil-entry-card max-md:!w-[55%]"
               style={{
                 position: "absolute",
                 top: 0,
@@ -309,7 +309,7 @@ function LandingPage() {
         </div>
 
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-1"
           style={{
             marginTop: "48px",
             gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
@@ -454,6 +454,7 @@ function LandingPage() {
         </div>
       {/* HOW IT WORKS */}
       <div
+        className="max-md:!px-4"
         style={{
           padding: "48px 40px",
           borderTop: "1px solid #e5e5e5",
@@ -462,7 +463,7 @@ function LandingPage() {
       >
         <SectionLabel>HOW IT WORKS</SectionLabel>
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-1"
           style={{
             gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
             gap: "24px",

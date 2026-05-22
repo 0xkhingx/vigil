@@ -106,13 +106,13 @@ function RegisterPage() {
 
   return (
     <VigilLayout>
-      <div style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
         {/* Section Label */}
         <SectionLabel>[TRADER] REGISTRATION</SectionLabel>
 
         {/* Headline */}
         <h1
-          className="font-bold tracking-tight trader-bonds-heading"
+          className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl"
           style={{
             fontSize: "72px",
             lineHeight: 1.05,
@@ -140,7 +140,7 @@ function RegisterPage() {
 
         {/* Form Layout - Two Columns */}
         <div
-          className="grid"
+          className="grid max-md:!grid-cols-1"
           style={{
             gridTemplateColumns: "1fr 1fr",
             gap: "32px",
@@ -339,6 +339,7 @@ function RegisterPage() {
                 SLASH THRESHOLD
               </label>
               <div
+                className="max-md:!grid-cols-1"
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr 1fr",
