@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "audit:colors": "node scripts/audit-colors.mjs",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "start": "ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
