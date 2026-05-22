@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && node -e \"const fs=require('fs');const w=JSON.parse(fs.readFileSync('dist/client/wrangler.json','utf8'));w.alias={'@coinbase/wallet-sdk':'./empty-module.js','@metamask/connect-evm':'./empty-module.js','porto':'./empty-module.js','porto/internal':'./empty-module.js','@safe-global/safe-apps-sdk':'./empty-module.js','@safe-global/safe-apps-provider':'./empty-module.js','@walletconnect/ethereum-provider':'./empty-module.js','@base-org/account':'./empty-module.js'};w.compatibility_flags=['nodejs_compat'];fs.writeFileSync('dist/client/wrangler.json',JSON.stringify(w));\"",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -88,6 +88,7 @@
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "wrangler": "^4.93.1"
   }
 }
