@@ -172,6 +172,21 @@
   animation: vigil-rise 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+@keyframes vigil-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vigil-page-enter {
+  animation: vigil-page-enter 350ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 .vigil-panel,
 .vigil-step-card,
 .vigil-stat-cell,
@@ -288,7 +303,8 @@
 @media (prefers-reduced-motion: reduce) {
   .vigil-reveal,
   .vigil-step-card,
-  .vigil-status-dot {
+  .vigil-status-dot,
+  .vigil-page-enter {
     animation: none;
   }
 
