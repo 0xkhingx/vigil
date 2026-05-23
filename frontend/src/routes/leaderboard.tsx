@@ -185,9 +185,100 @@ function LeaderboardPage() {
           </div>
         </div>
 
-        {/* Table */}
+        {/* Mobile cards */}
+        <div className="md:hidden">
+          {rows.length === 0 ? (
+            <div
+              style={{
+                padding: "48px 24px",
+                color: "#666666",
+                fontSize: "14px",
+              }}
+            >
+              No traders match this filter.
+            </div>
+          ) : (
+            rows.map((t) => (
+              <Link
+                key={t.handle}
+                to="/traders/$handle"
+                params={{ handle: t.handle }}
+                style={{
+                  display: "block",
+                  border: "1px solid #e5e5e5",
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  padding: "16px",
+                  marginBottom: "12px",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: 600,
+                      color: "#0a0a0a",
+                      textDecoration: t.status === "SLASHED" ? "line-through" : "none",
+                      opacity: t.status === "SLASHED" ? 0.6 : 1,
+                    }}
+                  >
+                    {t.handle}
+                  </div>
+                  <div className="font-mono text-[13px]" style={{ color: "#666666" }}>
+                    #{t.rank}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div>
+                    <div
+                      className="text-[11px] uppercase tracking-[0.15em]"
+                      style={{ color: "#666666", marginBottom: "4px" }}
+                    >
+                      AI SCORE
+                    </div>
+                    <div className="font-mono" style={{ color: "#0a0a0a", fontSize: "15px" }}>
+                      {t.aiScore.toFixed(1)}
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      className="text-[11px] uppercase tracking-[0.15em]"
+                      style={{ color: "#666666", marginBottom: "4px" }}
+                    >
+                      PNL (30D)
+                    </div>
+                    <div
+                      className="font-mono"
+                      style={{
+                        color: t.pnl30d < 0 ? "#666666" : "#0a0a0a",
+                        fontSize: "15px",
+                      }}
+                    >
+                      {t.pnl30d >= 0 ? "+" : ""}
+                      {t.pnl30d.toFixed(1)}%
+                    </div>
+                  </div>
+                  <div style={{ marginLeft: "auto" }}>
+                    <StatusBadge status={t.status} />
+                  </div>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+
+        {/* Table (desktop only) */}
         <div
-          className="max-md:!overflow-x-auto"
+          className="hidden md:block"
           style={{
             marginTop: "16px",
             border: "1px solid #e5e5e5",

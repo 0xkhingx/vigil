@@ -179,9 +179,124 @@ function PortfolioPage() {
             marginTop: "24px",
           }}
         >
-          {/* POSITIONS */}
+          {/* Mobile cards */}
+          <div className="md:hidden">
+            <div
+              style={{ padding: "16px 0", borderBottom: "1px solid #e5e5e5" }}
+            >
+              <SectionLabel>POSITIONS</SectionLabel>
+            </div>
+            {positions.length === 0 ? (
+              <div
+                style={{
+                  padding: "48px 0",
+                  color: "#666666",
+                  fontSize: "14px",
+                }}
+              >
+                No active bonds.
+              </div>
+            ) : (
+              positions.map((p) => (
+                <div
+                  key={p.trader}
+                  style={{
+                    border: "1px solid #e5e5e5",
+                    backgroundColor: "#fff",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    marginTop: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "#0a0a0a",
+                        textDecoration:
+                          p.status === "SLASHED" ? "line-through" : "none",
+                      }}
+                    >
+                      {p.trader}
+                    </div>
+                    <div>
+                      <StatusBadge status={p.status} />
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "24px", marginBottom: "12px" }}>
+                    <div>
+                      <div
+                        className="text-[11px] uppercase tracking-[0.15em]"
+                        style={{ color: "#666666", marginBottom: "2px" }}
+                      >
+                        STAKED
+                      </div>
+                      <div className="font-mono" style={{ color: "#0a0a0a" }}>
+                        ${p.staked.toLocaleString()}
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        className="text-[11px] uppercase tracking-[0.15em]"
+                        style={{ color: "#666666", marginBottom: "2px" }}
+                      >
+                        EARNED
+                      </div>
+                      <div className="font-mono" style={{ color: "#0a0a0a" }}>
+                        +${p.earned.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/traders/$handle"
+                      params={{ handle: p.trader }}
+                      className="vigil-clickable text-[11px] uppercase tracking-[0.15em]"
+                      style={{
+                        color: "#0a0a0a",
+                        border: "1px solid #d0d0d0",
+                        padding: "6px 10px",
+                        textDecoration: "none",
+                      }}
+                    >
+                      DETAILS
+                    </Link>
+                    <button
+                      onClick={() =>
+                        setExitState({
+                          trader: p.trader,
+                          staked: p.staked,
+                          earned: p.earned,
+                          step: "details",
+                        })
+                      }
+                      className="vigil-clickable vigil-clickable-orange text-[11px] uppercase tracking-[0.15em]"
+                      style={{
+                        color: "#9a3412",
+                        backgroundColor: "#fff3e8",
+                        border: "1px solid #f0b58e",
+                        padding: "6px 10px",
+                      }}
+                    >
+                      EXIT
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* POSITIONS (desktop) */}
           <div
-            className="max-md:!overflow-x-auto"
+            className="hidden md:block"
             style={{ border: "1px solid #e5e5e5", backgroundColor: "#f8f8f8" }}
           >
             <div

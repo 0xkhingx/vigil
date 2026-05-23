@@ -299,8 +299,79 @@ function TraderPage() {
         />
 
         {/* Stakers Table */}
+        {/* Mobile cards */}
+        <div className="md:hidden" style={{ marginTop: "32px" }}>
+          <div
+            style={{
+              padding: "16px 0",
+            }}
+          >
+            <SectionLabel>STAKERS</SectionLabel>
+          </div>
+          {stakers.map((s, i) => (
+            <div
+              key={i}
+              style={{
+                border: "1px solid #e5e5e5",
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                padding: "16px",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                className="font-mono"
+                style={{
+                  color: "#0a0a0a",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  marginBottom: "8px",
+                }}
+              >
+                {s.staker}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div
+                    className="text-[11px] uppercase tracking-[0.15em]"
+                    style={{ color: "#666666", marginBottom: "2px" }}
+                  >
+                    AMOUNT
+                  </div>
+                  <div
+                    className="font-mono"
+                    style={{ color: "#0a0a0a", fontSize: "15px" }}
+                  >
+                    {s.amount}
+                  </div>
+                </div>
+                <div>
+                  <div
+                    className="text-[11px] uppercase tracking-[0.15em]"
+                    style={{ color: "#666666", marginBottom: "2px" }}
+                  >
+                    JOINED
+                  </div>
+                  <div
+                    className="font-mono"
+                    style={{ color: "#0a0a0a", fontSize: "14px" }}
+                  >
+                    {s.joined}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div
-          className="max-md:!overflow-x-auto"
+          className="hidden md:block"
           style={{
             marginTop: "32px",
             border: "1px solid #e5e5e5",

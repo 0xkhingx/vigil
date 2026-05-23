@@ -200,52 +200,106 @@ function AgentLogPage() {
                         isExpanded ? null : globalIndex
                       )
                     }
+                    className="w-full text-left bg-transparent border-none cursor-pointer max-md:!block"
                     style={{
-                      width: "100%",
                       padding: "12px 24px",
-                      textAlign: "left",
-                      backgroundColor: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      display: "grid",
-                      gridTemplateColumns:
-                        "100px 120px 150px 1fr 20px",
-                      gap: "16px",
-                      alignItems: "center",
                     }}
                   >
-                    <div
-                      className="font-mono text-[13px]"
-                      style={{ color: "#666666" }}
-                    >
-                      {timeOnly}
+                    {/* Mobile layout */}
+                    <div className="md:hidden">
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <span
+                          className="font-mono text-[14px]"
+                          style={{ color: "#0a0a0a", fontWeight: 500 }}
+                        >
+                          {entry.trader}
+                        </span>
+                        <span
+                          style={{
+                            color: "#0a0a0a",
+                            fontSize: "12px",
+                            transition: "transform 0.2s",
+                            transform: isExpanded
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                          }}
+                        >
+                          ▼
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        <span
+                          className="font-mono text-[12px]"
+                          style={{ color: "#666666" }}
+                        >
+                          {timeOnly}
+                        </span>
+                        <TagChip tag={entry.type} />
+                      </div>
+                      <div
+                        className="font-mono text-[13px]"
+                        style={{ color: "#0a0a0a", opacity: 0.8 }}
+                      >
+                        {entry.detail}
+                      </div>
                     </div>
-                    <div>
-                      <TagChip tag={entry.type} />
-                    </div>
+                    {/* Desktop layout */}
                     <div
-                      className="font-mono text-[13px]"
-                      style={{ color: "#0a0a0a", fontWeight: 500 }}
-                    >
-                      {entry.trader}
-                    </div>
-                    <div
-                      className="font-mono text-[13px]"
-                      style={{ color: "#0a0a0a", opacity: 0.8 }}
-                    >
-                      {entry.detail}
-                    </div>
-                    <div
+                      className="hidden md:grid"
                       style={{
-                        color: "#0a0a0a",
-                        fontSize: "12px",
-                        transition: "transform 0.2s",
-                        transform: isExpanded
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
+                        gridTemplateColumns:
+                          "100px 120px 150px 1fr 20px",
+                        gap: "16px",
+                        alignItems: "center",
                       }}
                     >
-                      ▼
+                      <div
+                        className="font-mono text-[13px]"
+                        style={{ color: "#666666" }}
+                      >
+                        {timeOnly}
+                      </div>
+                      <div>
+                        <TagChip tag={entry.type} />
+                      </div>
+                      <div
+                        className="font-mono text-[13px]"
+                        style={{ color: "#0a0a0a", fontWeight: 500 }}
+                      >
+                        {entry.trader}
+                      </div>
+                      <div
+                        className="font-mono text-[13px]"
+                        style={{ color: "#0a0a0a", opacity: 0.8 }}
+                      >
+                        {entry.detail}
+                      </div>
+                      <div
+                        style={{
+                          color: "#0a0a0a",
+                          fontSize: "12px",
+                          transition: "transform 0.2s",
+                          transform: isExpanded
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        }}
+                      >
+                        ▼
+                      </div>
                     </div>
                   </button>
 

@@ -380,9 +380,24 @@ function LandingPage() {
                 ))}
               </div>
             </div>
+            <div className="md:hidden" style={{ marginTop: "24px" }}>
+              <Link
+                to="/leaderboard"
+                className="vigil-action text-[11px] uppercase tracking-[0.15em] block text-center"
+                style={{
+                  color: "#fff",
+                  backgroundColor: "#0a0a0a",
+                  border: "1px solid #0a0a0a",
+                  padding: "14px 24px",
+                  textDecoration: "none",
+                }}
+              >
+                VIEW FULL LEADERBOARD →
+              </Link>
+            </div>
           </div>
 
-          <div>
+          <div className="hidden md:block">
             <SectionLabel>TOP BONDED TRADERS</SectionLabel>
             <div
               className="vigil-panel vigil-reveal"
