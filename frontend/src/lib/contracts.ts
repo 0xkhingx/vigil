@@ -4,6 +4,10 @@ import { parseUnits, zeroAddress } from "viem";
 export const VIGIL_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
 export const USDC_ADDRESS = import.meta.env.VITE_USDC_ADDRESS as `0x${string}`;
 
+
+console.log("ENV CHECK - VIGIL_ADDRESS:", import.meta.env.VITE_CONTRACT_ADDRESS);
+console.log("ENV CHECK - USDC_ADDRESS:", import.meta.env.VITE_USDC_ADDRESS);
+
 export const VIGIL_ABI = [
   {
     "type": "function",
@@ -146,8 +150,7 @@ export function useStake() {
 
 // Hook to approve USDC spending
 export function useApproveUSDC() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { writeContract, data: hash, isPending, isSuccess, error } = useWriteContract();
 
   const approve = (amount: number) => {
     const parsedAmount = parseUnits(amount.toString(), 6);
@@ -159,7 +162,7 @@ export function useApproveUSDC() {
     });
   };
 
-  return { approve, hash, data: hash, isPending, isConfirming, isSuccess, error };
+  return { approve, hash, data: hash, isPending, isConfirming: false, isSuccess, error };
 }
 
 // Hook to post a bond as a trader

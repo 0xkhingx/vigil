@@ -49,9 +49,9 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
   const chainId = useChainId();
   const {
     approve,
+    hash: approveHash,
     isPending: isApproving,
     isConfirming: isApproveConfirming,
-    isSuccess: approveSuccess,
     error: approveError,
   } = useApproveUSDC();
   const {
@@ -81,11 +81,11 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
   const isBusy = isApproving || isApproveConfirming || isStaking || isStakeConfirming;
 
   useEffect(() => {
-    if (!approveSuccess) return;
+    if (!approveHash) return;
     hasSubmittedStakeRef.current = false;
     void refetchAllowance();
     setStep("stake");
-  }, [approveSuccess, refetchAllowance]);
+  }, [approveHash, refetchAllowance]);
 
   useEffect(() => {
     if (!stakeSuccess) return;
