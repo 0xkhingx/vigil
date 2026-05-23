@@ -202,7 +202,7 @@ function Footer() {
           Built on Arc · Settled in USDC
         </span>
         <a
-          href="https://github.com"
+          href="https://github.com/0xkhingx/vigil"
           target="_blank"
           rel="noreferrer"
           aria-label="GitHub"
@@ -212,6 +212,19 @@ function Footer() {
           <Github size={14} strokeWidth={1.5} />
           GITHUB
         </a>
+        <span
+          className="text-[11px] uppercase tracking-[0.15em]"
+          style={{ color: "#666666" }}
+        >
+          <a
+            href="https://github.com/0xkhingx/vigil"
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
+            github.com/0xkhingx/vigil
+          </a>
+        </span>
       </div>
     </footer>
   );
