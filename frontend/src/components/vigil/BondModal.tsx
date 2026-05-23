@@ -10,7 +10,6 @@ import {
   useApproveUSDC,
   useStake,
   useUsdcAllowance,
-  useUsdcBalance,
 } from "@/lib/contracts";
 import { ARC_TESTNET_CHAIN_ID } from "@/lib/wagmi";
 import type { Trader } from "@/lib/vigil-data";
@@ -62,8 +61,7 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
     isSuccess: stakeSuccess,
     error: stakeError,
   } = useStake();
-  const { allowance, refetch: refetchAllowance } = useUsdcAllowance(address);
-  const { balance } = useUsdcBalance(address);
+  const { refetch: refetchAllowance } = useUsdcAllowance(address);
   const [amount, setAmount] = useState("1");
   const [duration, setDuration] = useState<(typeof durations)[number]>(30);
   const [threshold, setThreshold] = useState<(typeof slashThresholds)[number]>(
@@ -79,15 +77,8 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
   const estimatedReturn = bondAmount * 0.08 * (duration / 365);
   const isValidAmount = Number.isFinite(bondAmount) && bondAmount > 0;
   const parsedBondAmount = parseUsdcAmount(amount);
-  const hasEnoughAllowance = parsedBondAmount !== null && allowance >= parsedBondAmount;
-  const hasEnoughBalance = parsedBondAmount !== null && balance >= parsedBondAmount;
   const isWrongNetwork = chainId !== ARC_TESTNET_CHAIN_ID;
   const isBusy = isApproving || isApproveConfirming || isStaking || isStakeConfirming;
-
-  useEffect(() => {
-    if (!isOpen || !isConnected || step === "done") return;
-    setStep(hasEnoughAllowance ? "stake" : "approve");
-  }, [hasEnoughAllowance, isConnected, isOpen, step]);
 
   useEffect(() => {
     if (!approveSuccess) return;
@@ -197,23 +188,11 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
       return;
     }
 
-    if (!hasEnoughBalance) {
-      toast.error("INSUFFICIENT USDC BALANCE", {
-        description: "Your wallet balance is below the amount required for this bond.",
-      });
-      return;
-    }
-
     if (isBusy) {
       return;
     }
 
     if (step === "approve") {
-      if (hasEnoughAllowance) {
-        setStep("stake");
-        return;
-      }
-
       approve(bondAmount);
       return;
     }
