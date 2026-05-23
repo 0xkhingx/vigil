@@ -132,174 +132,129 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* ENTRY POINT CARDS - OVERLAPPING */}
+          {/* ENTRY POINT CARDS */}
           <div
-            className="vigil-reveal max-md:!h-[360px]"
+            className="vigil-reveal"
             style={{
-              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
               alignSelf: "start",
-              height: "400px",
               animationDelay: "80ms",
             }}
           >
-            {/* I WANT TO STAKE CARD - Behind */}
             <Link
               to="/leaderboard"
-              className="vigil-entry-card max-md:!w-[55%]"
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "50%",
-                height: "90%",
+                display: "block",
                 backgroundColor: "#0f1a2e",
                 border: "1px solid rgba(59, 130, 246, 0.2)",
                 borderRadius: "18px",
                 padding: "24px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
                 textDecoration: "none",
-                color: "inherit",
                 cursor: "pointer",
-                transform: "rotate(-5deg) translateX(18px) translateY(-6px)",
-                zIndex: 1,
                 boxShadow: "0 18px 40px rgba(0, 0, 0, 0.28)",
-                transition:
-                  "transform 320ms cubic-bezier(0.22, 1, 0.36, 1), background-color 220ms ease, box-shadow 320ms ease, z-index 0ms linear 120ms",
-                willChange: "transform, box-shadow",
+                transition: "background-color 220ms ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.zIndex = "10";
                 e.currentTarget.style.backgroundColor = "#132847";
-                e.currentTarget.style.transform =
-                  "rotate(-3deg) translateX(28px) translateY(-18px) scale(1.03)";
-                e.currentTarget.style.boxShadow = "0 28px 56px rgba(0, 0, 0, 0.34)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.zIndex = "1";
                 e.currentTarget.style.backgroundColor = "#0f1a2e";
-                e.currentTarget.style.transform =
-                  "rotate(-5deg) translateX(18px) translateY(-6px) scale(1)";
-                e.currentTarget.style.boxShadow = "0 18px 40px rgba(0, 0, 0, 0.28)";
               }}
             >
-              <div>
-                <div
-                  className="text-[11px] uppercase tracking-[0.15em]"
-                  style={{ color: "#3b82f6", marginBottom: "12px" }}
-                >
-                  I WANT TO STAKE
-                </div>
-                <h3
-                  className="font-bold tracking-tight"
-                  style={{
-                    fontSize: "24px",
-                    lineHeight: 1.1,
-                    color: "#ffffff",
-                    marginBottom: "12px",
-                    fontWeight: 800,
-                  }}
-                >
-                  Back a trader.
-                </h3>
-                <p
-                  style={{
-                    fontSize: "13px",
-                    lineHeight: 1.5,
-                    color: "rgba(255,255,255,0.7)",
-                  }}
-                >
-                  Browse ranked traders.
-                </p>
+              <div
+                className="text-[11px] uppercase tracking-[0.15em]"
+                style={{ color: "#3b82f6", marginBottom: "12px" }}
+              >
+                I WANT TO STAKE
               </div>
+              <h3
+                className="font-bold tracking-tight"
+                style={{
+                  fontSize: "24px",
+                  lineHeight: 1.1,
+                  color: "#ffffff",
+                  marginBottom: "12px",
+                  fontWeight: 800,
+                }}
+              >
+                Back a trader.
+              </h3>
+              <p
+                style={{
+                  fontSize: "13px",
+                  lineHeight: 1.5,
+                  color: "rgba(255,255,255,0.7)",
+                }}
+              >
+                Browse ranked traders and stake USDC.
+              </p>
               <div
                 className="text-[10px] uppercase tracking-[0.15em]"
                 style={{
                   color: "#3b82f6",
                   fontWeight: 600,
+                  marginTop: "16px",
                 }}
               >
                 BROWSE TRADERS →
               </div>
             </Link>
 
-            {/* I AM A TRADER CARD - Front */}
             <Link
               to="/register"
-              className="vigil-entry-card max-md:!w-[55%]"
               style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                width: "50%",
-                height: "90%",
+                display: "block",
                 backgroundColor: "#1a1500",
                 border: "1px solid rgba(245, 158, 11, 0.2)",
                 borderRadius: "18px",
                 padding: "24px",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
                 textDecoration: "none",
-                color: "inherit",
                 cursor: "pointer",
-                transform: "rotate(5deg) translateX(-18px) translateY(36px)",
-                zIndex: 2,
                 boxShadow: "0 18px 40px rgba(0, 0, 0, 0.28)",
-                transition:
-                  "transform 320ms cubic-bezier(0.22, 1, 0.36, 1), background-color 220ms ease, box-shadow 320ms ease, z-index 0ms linear 120ms",
-                willChange: "transform, box-shadow",
+                transition: "background-color 220ms ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.zIndex = "10";
                 e.currentTarget.style.backgroundColor = "#2a2200";
-                e.currentTarget.style.transform =
-                  "rotate(3deg) translateX(-28px) translateY(22px) scale(1.03)";
-                e.currentTarget.style.boxShadow = "0 28px 56px rgba(0, 0, 0, 0.34)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.zIndex = "2";
                 e.currentTarget.style.backgroundColor = "#1a1500";
-                e.currentTarget.style.transform =
-                  "rotate(5deg) translateX(-18px) translateY(36px) scale(1)";
-                e.currentTarget.style.boxShadow = "0 18px 40px rgba(0, 0, 0, 0.28)";
               }}
             >
-              <div>
-                <div
-                  className="text-[11px] uppercase tracking-[0.15em]"
-                  style={{ color: "#f59e0b", marginBottom: "12px" }}
-                >
-                  I AM A TRADER
-                </div>
-                <h3
-                  className="font-bold tracking-tight"
-                  style={{
-                    fontSize: "24px",
-                    lineHeight: 1.1,
-                    color: "#ffffff",
-                    marginBottom: "12px",
-                    fontWeight: 800,
-                  }}
-                >
-                  Post a bond.
-                </h3>
-                <p
-                  style={{
-                    fontSize: "13px",
-                    lineHeight: 1.5,
-                    color: "rgba(255,255,255,0.7)",
-                  }}
-                >
-                  Declare your mandate.
-                </p>
+              <div
+                className="text-[11px] uppercase tracking-[0.15em]"
+                style={{ color: "#f59e0b", marginBottom: "12px" }}
+              >
+                I AM A TRADER
               </div>
+              <h3
+                className="font-bold tracking-tight"
+                style={{
+                  fontSize: "24px",
+                  lineHeight: 1.1,
+                  color: "#ffffff",
+                  marginBottom: "12px",
+                  fontWeight: 800,
+                }}
+              >
+                Post a bond.
+              </h3>
+              <p
+                style={{
+                  fontSize: "13px",
+                  lineHeight: 1.5,
+                  color: "rgba(255,255,255,0.7)",
+                }}
+              >
+                Declare your mandate and get ranked.
+              </p>
               <div
                 className="text-[10px] uppercase tracking-[0.15em]"
                 style={{
                   color: "#f59e0b",
                   fontWeight: 600,
+                  marginTop: "16px",
                 }}
               >
                 REGISTER AS TRADER →
