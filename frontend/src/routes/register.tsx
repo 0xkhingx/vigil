@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
+import { toast } from "sonner";
 import {
   VigilLayout,
   SectionLabel,
@@ -40,14 +41,14 @@ const thresholds = [
 function RegisterPage() {
   const { address } = useAccount();
   const { isArcTestnet, switchToArc, isPending: isSwitching } = useArcNetwork();
-  const { approve, data: approveHash, isPending: isApproving } = useApproveUSDC();
-  const { postBond, data: bondHash, isPending: isBonding } = usePostBond();
+  const { approve, data: approveHash, isPending: isApproving, error: approveError } = useApproveUSDC();
+  const { postBond, data: bondHash, isPending: isBonding, error: bondError } = usePostBond();
   const [handle, setHandle] = useState("");
   const [mandateStyle, setMandateStyle] = useState("");
   const [maxLeverage, setMaxLeverage] = useState("");
   const [maxDrawdown, setMaxDrawdown] = useState("");
   const [venues, setVenues] = useState("");
-  const [bondAmount, setBondAmount] = useState("");
+  const [bondAmount, setBondAmount] = useState("10");
   const [threshold, setThreshold] = useState<ThresholdType>("STANDARD");
   const [step, setStep] = useState<"approve" | "bond" | "done">("approve");
 
@@ -72,6 +73,34 @@ function RegisterPage() {
       setStep("done");
     }
   }, [bondSuccess]);
+
+  useEffect(() => {
+    if (!approveError) return;
+    const message = approveError instanceof Error ? approveError.message.toLowerCase() : "";
+    if (message.includes("rejected")) {
+      toast.error("APPROVAL REJECTED", {
+        description: "The wallet request was rejected.",
+      });
+    } else {
+      toast.error("APPROVAL FAILED", {
+        description: approveError instanceof Error ? approveError.message : "Could not approve USDC.",
+      });
+    }
+  }, [approveError]);
+
+  useEffect(() => {
+    if (!bondError) return;
+    const message = bondError instanceof Error ? bondError.message.toLowerCase() : "";
+    if (message.includes("rejected")) {
+      toast.error("BOND REJECTED", {
+        description: "The wallet request was rejected.",
+      });
+    } else {
+      toast.error("BOND FAILED", {
+        description: bondError instanceof Error ? bondError.message : "Could not post bond.",
+      });
+    }
+  }, [bondError]);
 
   const handleSubmit = () => {
     if (!address) return;
