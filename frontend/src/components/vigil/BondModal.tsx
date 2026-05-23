@@ -64,7 +64,7 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
   } = useStake();
   const { allowance, refetch: refetchAllowance } = useUsdcAllowance(address);
   const { balance } = useUsdcBalance(address);
-  const [amount, setAmount] = useState("1000");
+  const [amount, setAmount] = useState("100");
   const [duration, setDuration] = useState<(typeof durations)[number]>(30);
   const [threshold, setThreshold] = useState<(typeof slashThresholds)[number]>(
     slashThresholds[1],
@@ -142,7 +142,7 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
       window.clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
-    setAmount("1000");
+    setAmount("100");
     setDuration(30);
     setThreshold(slashThresholds[1]);
     setSlashDetailsOpen(false);
