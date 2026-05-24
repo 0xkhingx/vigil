@@ -300,6 +300,22 @@
   outline-offset: 3px;
 }
 
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+}
+
+.vigil-skeleton {
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+  background-color: #e5e5e5;
+}
+
+.vigil-skeleton-text {
+  height: 14px;
+  border-radius: 0;
+  background-color: #e5e5e5;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .vigil-reveal,
   .vigil-step-card,

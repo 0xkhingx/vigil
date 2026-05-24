@@ -54,15 +54,15 @@ function LandingPage() {
   return (
     <VigilLayout>
       {/* HERO */}
-      <div className="max-md:!px-4" style={{ padding: "48px 40px 0 40px" }}>
+      <div className="max-md:!px-4 max-md:!pt-6 max-md:!pb-0" style={{ padding: "48px 40px 0 40px" }}>
         <div
-          className="grid max-md:!grid-cols-1"
+          className="grid max-md:!grid-cols-1 max-md:!gap-6"
           style={{ gridTemplateColumns: "1.3fr 1fr", gap: "48px" }}
         >
           <div className="vigil-reveal">
             <SectionLabel>[SYSTEM] STAKE. WATCH. SLASH.</SectionLabel>
             <h1
-              className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl md:!text-5xl"
+              className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl md:!text-5xl max-md:!mt-4"
               style={{
                 fontSize: "72px",
                 lineHeight: 1.02,
@@ -74,7 +74,7 @@ function LandingPage() {
               Trader bonds,<br />policed in real time<br />by an AI custodian.
             </h1>
             <p
-              className="max-w-xl"
+              className="max-w-xl max-md:!mt-6"
               style={{
                 fontSize: "15px",
                 lineHeight: 1.65,
@@ -87,7 +87,7 @@ function LandingPage() {
               trader's stated mandate, and automatically slashes the bond the
               moment risk discipline breaks. No discretion. No grace period.
             </p>
-            <div className="flex items-center gap-3 max-md:!flex-col max-md:!items-stretch" style={{ marginTop: "40px" }}>
+            <div className="flex items-center gap-3 max-md:!flex-col max-md:!items-stretch max-md:!mt-6" style={{ marginTop: "40px" }}>
               {address ? (
                   <Link
                     to="/portfolio"
@@ -264,7 +264,7 @@ function LandingPage() {
         </div>
 
         <div
-          className="grid max-md:!grid-cols-1"
+          className="grid max-md:!grid-cols-1 max-md:!mt-6"
           style={{
             marginTop: "48px",
             gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
@@ -303,7 +303,7 @@ function LandingPage() {
                   ONLINE
                 </div>
               </div>
-              <div style={{ maxHeight: "420px", overflow: "hidden" }}>
+              <div className="max-md:!overflow-x-auto" style={{ maxHeight: "420px", overflow: "hidden" }}>
                 {feed.map((f, i) => (
                   <div
                     key={i}
@@ -319,7 +319,7 @@ function LandingPage() {
                   >
                     <span style={{ color: "#666666" }}>{f.ts}</span>
                     <TagChip tag={f.tag} />
-                    <span style={{ color: "rgba(255,255,255,0.6)" }}>
+                      <span style={{ color: "rgba(255,255,255,0.6)" }}>
                       <span
                         style={{
                           color: "#ffffff",
@@ -329,7 +329,7 @@ function LandingPage() {
                       >
                         {f.trader}
                       </span>{" "}
-                      � {f.detail}
+                      — {f.detail}
                     </span>
                   </div>
                 ))}
@@ -349,6 +349,48 @@ function LandingPage() {
               >
                 VIEW FULL LEADERBOARD →
               </Link>
+            </div>
+          </div>
+
+          {/* Mobile: top traders cards */}
+          <div className="md:hidden">
+            <SectionLabel>TOP BONDED TRADERS</SectionLabel>
+            <div
+              className="vigil-panel"
+              style={{
+                marginTop: "16px",
+                border: "1px solid #e5e5e5",
+                backgroundColor: "#fff",
+              }}
+            >
+              {top.map((t) => (
+                <Link
+                  key={t.handle}
+                  to="/traders/$handle"
+                  params={{ handle: t.handle }}
+                  style={{
+                    display: "block",
+                    padding: "12px 16px",
+                    borderBottom: "1px solid #e5e5e5",
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <span style={{ fontSize: "14px", fontWeight: 600, color: "#0a0a0a", textDecoration: t.status === "SLASHED" ? "line-through" : "none", opacity: t.status === "SLASHED" ? 0.6 : 1 }}>
+                      {t.handle}
+                    </span>
+                    <span className="font-mono text-[11px]" style={{ color: "#666666" }}>#{t.rank}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <span className="font-mono text-[12px]" style={{ color: "#666666" }}>{t.aiScore.toFixed(1)} score</span>
+                    <span className="font-mono text-[12px]" style={{ color: t.pnl30d >= 0 ? "#208042" : "#666666" }}>
+                      {t.pnl30d >= 0 ? "+" : ""}{t.pnl30d.toFixed(1)}%
+                    </span>
+                    <StatusBadge status={t.status} />
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -424,7 +466,7 @@ function LandingPage() {
         </div>
       {/* HOW IT WORKS */}
       <div
-        className="max-md:!px-4"
+        className="max-md:!px-4 max-md:!py-6"
         style={{
           padding: "48px 40px",
           borderTop: "1px solid #e5e5e5",

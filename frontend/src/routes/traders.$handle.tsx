@@ -123,13 +123,13 @@ function TraderPage() {
 
   return (
     <VigilLayout>
-      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4 max-md:!py-6" style={{ padding: "48px 40px" }}>
         {/* Section Label */}
         <SectionLabel>[TRADER] PROFILE</SectionLabel>
 
         {/* Headline */}
         <h1
-          className="font-bold tracking-tight max-md:!text-4xl"
+          className="font-bold tracking-tight max-md:!text-4xl max-md:!mt-3"
           style={{
             fontSize: "72px",
             lineHeight: 1.05,

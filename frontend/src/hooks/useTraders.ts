@@ -5,11 +5,13 @@ import { fetchTraders, fetchStats, fetchAgentLog } from "@/lib/api";
 export function useTraders() {
   const [traders, setTraders] = useState(mockTraders);
   const [loading, setLoading] = useState(true);
+  const [backendOffline, setBackendOffline] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     fetchTraders().then((data) => {
       if (data) {
-        // Merge API scores into mock data structure
+        setBackendOffline(false);
         const merged = mockTraders.map((mock) => {
           const live = data.find((d: any) => d.handle === mock.handle);
           if (live) {
@@ -23,12 +25,14 @@ export function useTraders() {
           return mock;
         });
         setTraders(merged);
+      } else {
+        setBackendOffline(true);
       }
       setLoading(false);
     });
   }, []);
 
-  return { traders, loading };
+  return { traders, loading, backendOffline };
 }
 
 export function useStats() {
@@ -50,13 +54,21 @@ export function useStats() {
 
 export function useAgentLog() {
   const [log, setLog] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiFailed, setApiFailed] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     fetchAgentLog().then((data) => {
-      if (data) setLog(data);
+      if (data) {
+        setLog(data);
+        setApiFailed(false);
+      } else {
+        setApiFailed(true);
+      }
+      setLoading(false);
     });
 
-    // Poll every 30 seconds for live updates
     const interval = setInterval(() => {
       fetchAgentLog().then((data) => {
         if (data) setLog(data);
@@ -66,5 +78,5 @@ export function useAgentLog() {
     return () => clearInterval(interval);
   }, []);
 
-  return log;
+  return { log, loading, apiFailed };
 }

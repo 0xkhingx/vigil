@@ -49,8 +49,22 @@ const getFilterColor = (status: "ALL" | TraderStatus): { bg: string; border: str
   }
 };
 
+function SkeletonRow() {
+  return (
+    <div className="flex items-center" style={{ padding: "0 24px", height: "48px", borderBottom: "1px solid #e5e5e5" }}>
+      <div className="vigil-skeleton" style={{ width: "30px", height: "14px", marginRight: "24px" }} />
+      <div className="vigil-skeleton" style={{ width: "100px", height: "14px", marginRight: "24px", flex: "1.4" }} />
+      <div className="vigil-skeleton" style={{ width: "120px", height: "14px", marginRight: "24px", flex: "1" }} />
+      <div className="vigil-skeleton" style={{ width: "60px", height: "14px", marginRight: "24px", flex: "0.8" }} />
+      <div className="vigil-skeleton" style={{ width: "80px", height: "14px", marginRight: "24px", flex: "1" }} />
+      <div className="vigil-skeleton" style={{ width: "80px", height: "14px", marginRight: "24px", flex: "1" }} />
+      <div className="vigil-skeleton" style={{ width: "90px", height: "14px", flex: "140px" }} />
+    </div>
+  );
+}
+
 function LeaderboardPage() {
-  const { traders } = useTraders();
+  const { traders, loading, backendOffline } = useTraders();
   const [sortKey, setSortKey] = useState<SortKey>("rank");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [statusFilter, setStatusFilter] = useState<"ALL" | TraderStatus>("ALL");
@@ -79,10 +93,10 @@ function LeaderboardPage() {
 
   return (
     <VigilLayout>
-      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4 max-md:!py-6" style={{ padding: "48px 40px" }}>
         <SectionLabel>[INDEX] BONDED TRADERS</SectionLabel>
         <h1
-          className="font-bold tracking-tight max-md:!text-4xl"
+          className="font-bold tracking-tight max-md:!text-4xl max-md:!mt-2 max-md:!mb-2"
           style={{
             fontSize: "64px",
             lineHeight: 1.05,
@@ -95,7 +109,7 @@ function LeaderboardPage() {
           Leaderboard.
         </h1>
         <p
-          className="max-w-2xl"
+          className="max-w-2xl max-md:!mb-4"
           style={{
             fontSize: "15px",
             lineHeight: 1.6,
@@ -127,7 +141,7 @@ function LeaderboardPage() {
 
         {/* Controls */}
         <div
-          className="max-md:!flex-col max-md:!items-stretch"
+          className="max-md:!flex-col max-md:!items-stretch max-md:!mt-6"
           style={{
             marginTop: "40px",
             border: "1px solid #e5e5e5",
@@ -185,48 +199,212 @@ function LeaderboardPage() {
           </div>
         </div>
 
-        {/* Mobile cards */}
-        <div className="md:hidden">
-          {rows.length === 0 ? (
-            <div
-              style={{
-                padding: "48px 24px",
-                color: "#666666",
-                fontSize: "14px",
-              }}
-            >
-              No traders match this filter.
-            </div>
-          ) : (
-            rows.map((t) => (
-              <Link
-                key={t.handle}
-                to="/traders/$handle"
-                params={{ handle: t.handle }}
+        {/* Backend offline banner */}
+        {backendOffline && (
+          <div
+            style={{
+              marginTop: "16px",
+              padding: "12px 20px",
+              backgroundColor: "#fff8d0",
+              border: "1px solid #f3e3a3",
+              fontSize: "12px",
+              color: "#0a0a0a",
+            }}
+          >
+            ⚡ Backend offline — displaying cached trader data. Some fields may
+            not reflect the latest on-chain state.
+          </div>
+        )}
+
+        {/* Loading skeleton — Mobile */}
+        {loading && (
+          <div className="md:hidden" style={{ marginTop: "16px" }}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className="vigil-skeleton"
                 style={{
-                  display: "block",
-                  border: "1px solid #e5e5e5",
-                  backgroundColor: "#fff",
-                  borderRadius: "8px",
-                  padding: "16px",
+                  height: "80px",
                   marginBottom: "12px",
-                  textDecoration: "none",
-                  color: "inherit",
+                  borderRadius: "8px",
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Loading skeleton — Desktop */}
+        {loading && (
+          <div
+            className="hidden md:block"
+            style={{
+              marginTop: "16px",
+              border: "1px solid #e5e5e5",
+              backgroundColor: "#f8f8f8",
+            }}
+          >
+            <SkeletonRow />
+            <SkeletonRow />
+            <SkeletonRow />
+            <SkeletonRow />
+            <SkeletonRow />
+          </div>
+        )}
+
+        {/* Mobile cards */}
+        {!loading && (
+          <div className="md:hidden">
+            {rows.length === 0 ? (
+              <div
+                style={{
+                  padding: "48px 24px",
+                  color: "#666666",
+                  fontSize: "14px",
                 }}
               >
-                <div
+                No traders match this filter.
+              </div>
+            ) : (
+              rows.map((t) => (
+                <Link
+                  key={t.handle}
+                  to="/traders/$handle"
+                  params={{ handle: t.handle }}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    display: "block",
+                    border: "1px solid #e5e5e5",
+                    backgroundColor: "#fff",
+                    padding: "16px",
                     marginBottom: "12px",
+                    textDecoration: "none",
+                    color: "inherit",
                   }}
                 >
                   <div
                     style={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      color: "#0a0a0a",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "#0a0a0a",
+                        textDecoration: t.status === "SLASHED" ? "line-through" : "none",
+                        opacity: t.status === "SLASHED" ? 0.6 : 1,
+                      }}
+                    >
+                      {t.handle}
+                    </div>
+                    <div className="font-mono text-[13px]" style={{ color: "#666666" }}>
+                      #{t.rank}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                    <div>
+                      <div
+                        className="text-[11px] uppercase tracking-[0.15em]"
+                        style={{ color: "#666666", marginBottom: "4px" }}
+                      >
+                        AI SCORE
+                      </div>
+                      <div className="font-mono" style={{ color: "#0a0a0a", fontSize: "15px" }}>
+                        {t.aiScore.toFixed(1)}
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        className="text-[11px] uppercase tracking-[0.15em]"
+                        style={{ color: "#666666", marginBottom: "4px" }}
+                      >
+                        PNL (30D)
+                      </div>
+                      <div
+                        className="font-mono"
+                        style={{
+                          color: t.pnl30d < 0 ? "#666666" : "#0a0a0a",
+                          fontSize: "15px",
+                        }}
+                      >
+                        {t.pnl30d >= 0 ? "+" : ""}
+                        {t.pnl30d.toFixed(1)}%
+                      </div>
+                    </div>
+                    <div style={{ marginLeft: "auto" }}>
+                      <StatusBadge status={t.status} />
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Table (desktop only) */}
+        {!loading && (
+          <div
+            className="hidden md:block"
+            style={{
+              marginTop: "16px",
+              border: "1px solid #e5e5e5",
+              backgroundColor: "#f8f8f8",
+            }}
+          >
+            <div
+              className="grid font-mono text-[11px] uppercase tracking-[0.15em]"
+              style={{
+                gridTemplateColumns: "60px 1.4fr 1fr 0.8fr 1fr 1fr 140px",
+                padding: "0 24px",
+                height: "48px",
+                alignItems: "center",
+                color: "#666666",
+                borderBottom: "1px solid #e5e5e5",
+              }}
+            >
+              <SortHeader label="RANK" k="rank" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
+              <div>HANDLE</div>
+              <div>ADDRESS</div>
+              <SortHeader label="AI SCORE" k="aiScore" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
+              <SortHeader label="PNL (30D)" k="pnl30d" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
+              <SortHeader label="BOND" k="bondSize" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
+              <div>STATUS</div>
+            </div>
+            {rows.length === 0 ? (
+              <div
+                style={{
+                  padding: "48px 24px",
+                  color: "#666666",
+                  fontSize: "14px",
+                }}
+              >
+                No traders match this filter.
+              </div>
+            ) : (
+              rows.map((t) => (
+                <Link
+                  key={t.handle}
+                  to="/traders/$handle"
+                  params={{ handle: t.handle }}
+                  className="vigil-trader-row grid"
+                  style={{
+                    gridTemplateColumns: "60px 1.4fr 1fr 0.8fr 1fr 1fr 140px",
+                    padding: "0 24px",
+                    height: "48px",
+                    alignItems: "center",
+                    color: "#0a0a0a",
+                    fontSize: "14px",
+                    borderBottom: "1px solid #e5e5e5",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div className="font-mono" style={{ color: "#666666" }}>
+                    {String(t.rank).padStart(2, "0")}
+                  </div>
+                  <div
+                    style={{
                       textDecoration: t.status === "SLASHED" ? "line-through" : "none",
                       opacity: t.status === "SLASHED" ? 0.6 : 1,
                     }}
@@ -234,134 +412,25 @@ function LeaderboardPage() {
                     {t.handle}
                   </div>
                   <div className="font-mono text-[13px]" style={{ color: "#666666" }}>
-                    #{t.rank}
+                    {t.address}
                   </div>
-                </div>
-                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div className="font-mono">{t.aiScore.toFixed(1)}</div>
+                  <div
+                    className="font-mono"
+                    style={{ color: t.pnl30d < 0 ? "#666666" : "#0a0a0a" }}
+                  >
+                    {t.pnl30d >= 0 ? "+" : ""}
+                    {t.pnl30d.toFixed(1)}%
+                  </div>
+                  <div className="font-mono">${t.bondSize.toLocaleString()}</div>
                   <div>
-                    <div
-                      className="text-[11px] uppercase tracking-[0.15em]"
-                      style={{ color: "#666666", marginBottom: "4px" }}
-                    >
-                      AI SCORE
-                    </div>
-                    <div className="font-mono" style={{ color: "#0a0a0a", fontSize: "15px" }}>
-                      {t.aiScore.toFixed(1)}
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      className="text-[11px] uppercase tracking-[0.15em]"
-                      style={{ color: "#666666", marginBottom: "4px" }}
-                    >
-                      PNL (30D)
-                    </div>
-                    <div
-                      className="font-mono"
-                      style={{
-                        color: t.pnl30d < 0 ? "#666666" : "#0a0a0a",
-                        fontSize: "15px",
-                      }}
-                    >
-                      {t.pnl30d >= 0 ? "+" : ""}
-                      {t.pnl30d.toFixed(1)}%
-                    </div>
-                  </div>
-                  <div style={{ marginLeft: "auto" }}>
                     <StatusBadge status={t.status} />
                   </div>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-
-        {/* Table (desktop only) */}
-        <div
-          className="hidden md:block"
-          style={{
-            marginTop: "16px",
-            border: "1px solid #e5e5e5",
-            backgroundColor: "#f8f8f8",
-          }}
-        >
-          <div
-            className="grid font-mono text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              gridTemplateColumns: "60px 1.4fr 1fr 0.8fr 1fr 1fr 140px",
-              padding: "0 24px",
-              height: "48px",
-              alignItems: "center",
-              color: "#666666",
-              borderBottom: "1px solid #e5e5e5",
-            }}
-          >
-            <SortHeader label="RANK" k="rank" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
-            <div>HANDLE</div>
-            <div>ADDRESS</div>
-            <SortHeader label="AI SCORE" k="aiScore" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
-            <SortHeader label="PNL (30D)" k="pnl30d" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
-            <SortHeader label="BOND" k="bondSize" sortKey={sortKey} sortDir={sortDir} onSort={onSort} />
-            <div>STATUS</div>
+                </Link>
+              ))
+            )}
           </div>
-          {rows.length === 0 ? (
-            <div
-              style={{
-                padding: "48px 24px",
-                color: "#666666",
-                fontSize: "14px",
-              }}
-            >
-              No traders match this filter.
-            </div>
-          ) : (
-            rows.map((t) => (
-              <Link
-                key={t.handle}
-                to="/traders/$handle"
-                params={{ handle: t.handle }}
-                className="vigil-trader-row grid"
-                style={{
-                  gridTemplateColumns: "60px 1.4fr 1fr 0.8fr 1fr 1fr 140px",
-                  padding: "0 24px",
-                  height: "48px",
-                  alignItems: "center",
-                  color: "#0a0a0a",
-                  fontSize: "14px",
-                  borderBottom: "1px solid #e5e5e5",
-                  textDecoration: "none",
-                }}
-              >
-                <div className="font-mono" style={{ color: "#666666" }}>
-                  {String(t.rank).padStart(2, "0")}
-                </div>
-                <div
-                  style={{
-                    textDecoration: t.status === "SLASHED" ? "line-through" : "none",
-                    opacity: t.status === "SLASHED" ? 0.6 : 1,
-                  }}
-                >
-                  {t.handle}
-                </div>
-                <div className="font-mono text-[13px]" style={{ color: "#666666" }}>
-                  {t.address}
-                </div>
-                <div className="font-mono">{t.aiScore.toFixed(1)}</div>
-                <div
-                  className="font-mono"
-                  style={{ color: t.pnl30d < 0 ? "#666666" : "#0a0a0a" }}
-                >
-                  {t.pnl30d >= 0 ? "+" : ""}
-                  {t.pnl30d.toFixed(1)}%
-                </div>
-                <div className="font-mono">${t.bondSize.toLocaleString()}</div>
-                <div>
-                  <StatusBadge status={t.status} />
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+        )}
       </div>
     </VigilLayout>
   );

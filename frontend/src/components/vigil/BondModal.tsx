@@ -286,11 +286,19 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
                 className="h-12 w-full px-4 text-[18px] font-bold outline-none"
                 style={{
                   backgroundColor: "#0b0b0b",
-                  border: "1px solid #333333",
+                  border: isValidAmount ? "1px solid #333333" : "1px solid #dc2626",
                   color: "#ffffff",
                   fontFamily: numberFont,
                 }}
               />
+              {!isValidAmount && (
+                <div
+                  className="font-mono text-[11px]"
+                  style={{ color: "#dc2626", marginTop: "6px" }}
+                >
+                  ENTER A BOND AMOUNT GREATER THAN 0
+                </div>
+              )}
             </div>
 
             <ToggleGroup label="DURATION">
@@ -375,6 +383,15 @@ export function BondModal({ trader, isOpen, onClose }: BondModalProps) {
                 {buttonLabel}
               </span>
             </button>
+
+            {isWrongNetwork && step !== "done" && (
+              <div
+                className="font-mono text-[11px] text-center"
+                style={{ color: "#f59e0b", marginTop: "10px" }}
+              >
+                WRONG NETWORK — SWITCH TO ARC TESTNET TO CONTINUE
+              </div>
+            )}
 
             {step === "done" && (
               <p

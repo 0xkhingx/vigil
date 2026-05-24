@@ -49,10 +49,10 @@ function PortfolioPage() {
   if (!address) {
     return (
       <VigilLayout>
-        <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
+        <div className="max-md:!px-4 max-md:!py-6" style={{ padding: "48px 40px" }}>
           <SectionLabel>[ACCOUNT] PORTFOLIO</SectionLabel>
           <h1
-            className="font-bold tracking-tight max-md:!text-4xl"
+            className="font-bold tracking-tight max-md:!text-4xl max-md:!mt-2"
             style={{
               fontSize: "64px",
               lineHeight: 1.05,
@@ -106,10 +106,10 @@ function PortfolioPage() {
 
   return (
     <VigilLayout>
-      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4 max-md:!py-6" style={{ padding: "48px 40px" }}>
         <SectionLabel>[ACCOUNT] PORTFOLIO · {shortAddress(address)}</SectionLabel>
         <h1
-          className="font-bold tracking-tight max-md:!text-4xl"
+          className="font-bold tracking-tight max-md:!text-4xl max-md:!mt-2 max-md:!mb-2"
           style={{
             fontSize: "64px",
             lineHeight: 1.05,
@@ -134,7 +134,7 @@ function PortfolioPage() {
         </p>
 
         <div
-          className="grid max-md:!grid-cols-2"
+          className="grid max-md:!grid-cols-2 max-md:!mt-6"
           style={{
             gridTemplateColumns: "repeat(4, 1fr)",
             marginTop: "48px",
@@ -145,6 +145,7 @@ function PortfolioPage() {
           {stats.map(([label, value], i) => (
             <div
               key={label}
+              className="max-md:!p-4"
               style={{
                 padding: "24px",
                 borderRight: i < stats.length - 1 ? "1px solid #e5e5e5" : "none",
@@ -157,7 +158,7 @@ function PortfolioPage() {
                 {label}
               </div>
               <div
-                className="font-mono"
+                className="font-mono max-md:!text-2xl"
                 style={{
                   fontSize: "32px",
                   color: "#0a0a0a",

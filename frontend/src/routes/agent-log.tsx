@@ -21,41 +21,20 @@ export const Route = createFileRoute("/agent-log")({
   component: AgentLogPage,
 });
 
-// Placeholder data when API returns empty
-const placeholderLog = [
-  { timestamp: "2026-05-15 14:18:33 UTC", type: "WARN", trader: "ploutos", detail: "drawdown 8.7% — within 1.3% of limit", reasoning: "Drawdown exceeding mandate threshold. Position concentration increased 12% day-over-day. Recommend risk reduction." },
-  { timestamp: "2026-05-15 14:02:11 UTC", type: "SCORE", trader: "0xkairos", detail: "risk score updated 93.8 → 94.2", reasoning: "Sharpe ratio improved to 2.81. Leverage maintained at safe levels. Position sizing within mandate." },
-  { timestamp: "2026-05-15 13:51:47 UTC", type: "SCORE", trader: "merlin.eth", detail: "risk score updated 91.4 → 91.7", reasoning: "Trend following strategy performing within parameters. Win rate at 71%. No mandate violations detected." },
-  { timestamp: "2026-05-15 13:40:00 UTC", type: "SCORE", trader: "vega.lens", detail: "risk score updated 85.7 → 86.0", reasoning: "Options vol strategy maintaining delta neutrality. Vega exposure within limits. Greeks balanced." },
-  { timestamp: "2026-05-15 13:22:18 UTC", type: "POLICY", trader: "lyra.fi", detail: "funding capture +0.42% logged", reasoning: "Funding rate arbitrage successfully executed. Position pairs balanced. No leverage spike detected." },
-  { timestamp: "2026-05-15 12:55:41 UTC", type: "WARN", trader: "noctis", detail: "single-name concentration > 35%", reasoning: "Single asset exposure exceeds 30% limit. Risk score impact -2.4 points. Recommend rebalance." },
-  { timestamp: "2026-05-15 12:02:51 UTC", type: "POLICY", trader: "ploutos", detail: "leverage spike to 3.9x detected", reasoning: "Leverage increased from 2.1x to 3.9x in 8 minutes. Still within 4.0x mandate. Marked for monitoring." },
-  { timestamp: "2026-05-15 08:11:23 UTC", type: "SCORE", trader: "noctis", detail: "risk score downgraded 81.0 → 79.4", reasoning: "Volatility spike across alt-pair portfolio. Win rate decreased 6%. Mandate still in compliance." },
-  { timestamp: "2026-05-15 02:11:09 UTC", type: "SLASH", trader: "icarus_x", detail: "bond fully slashed: drawdown 14.8% > 12.0%", reasoning: "Maximum drawdown exceeded mandate of 12.0%. Automatic slash triggered. Bond value reduced to $0." },
-  { timestamp: "2026-05-15 02:10:51 UTC", type: "POLICY", trader: "icarus_x", detail: "mandate breach detected: max drawdown", reasoning: "Drawdown reached 13.2%. Grace period: 180 seconds. Slash condition: drawdown > 12.0%." },
-];
+const ARC_EXPLORER_URL = "https://explorer.arc.network/tx";
 
 type FilterType = "ALL" | "SCORE" | "WARN" | "POLICY" | "SLASH";
-
-interface LogEntry {
-  timestamp: string;
-  type: string;
-  trader: string;
-  detail: string;
-  reasoning?: string;
-}
 
 const ENTRIES_PER_PAGE = 50;
 
 function AgentLogPage() {
-  const agentLog = useAgentLog();
+  const { log: agentLog, loading: logLoading } = useAgentLog();
   const [activeFilter, setActiveFilter] = useState<FilterType>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Use placeholder data if API returns empty
-  const logData = agentLog.length > 0 ? agentLog : placeholderLog;
+  const logData = agentLog;
 
   // Filter and search
   const filtered = useMemo(() => {
@@ -98,13 +77,13 @@ function AgentLogPage() {
 
   return (
     <VigilLayout>
-      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4 max-md:!py-6" style={{ padding: "48px 40px" }}>
         {/* Section Label */}
         <SectionLabel>[SYSTEM] AGENT ACTIVITY LOG</SectionLabel>
 
         {/* Headline */}
         <h1
-          className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl"
+          className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl max-md:!mt-3"
           style={{
             fontSize: "72px",
             lineHeight: 1.05,
@@ -118,7 +97,7 @@ function AgentLogPage() {
 
         {/* Filter and Search Bar */}
         <div
-          className="max-md:!flex-col max-md:!items-stretch"
+          className="max-md:!flex-col max-md:!items-stretch max-md:!mt-4"
           style={{
             marginTop: "32px",
             display: "flex",
@@ -176,7 +155,17 @@ function AgentLogPage() {
 
         {/* Log Entries */}
         <div className="max-md:!overflow-x-auto" style={{ marginTop: "32px" }}>
-          {paginatedEntries.length > 0 ? (
+          {logLoading ? (
+            <div>
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="vigil-skeleton"
+                  style={{ height: "48px", marginBottom: "8px" }}
+                />
+              ))}
+            </div>
+          ) : paginatedEntries.length > 0 ? (
             paginatedEntries.map((entry, pageIndex) => {
               const globalIndex =
                 (currentPage - 1) * ENTRIES_PER_PAGE + pageIndex;
@@ -348,10 +337,13 @@ function AgentLogPage() {
                           >
                             ONCHAIN TX HASH
                           </div>
-                          <div
-                            className="font-mono text-[13px]"
+                          <a
+                            href={`${ARC_EXPLORER_URL}/0x${Math.random().toString(16).substring(2).padEnd(64, "0")}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-mono text-[13px] underline"
                             style={{
-                              color: "#0a0a0a",
+                              color: "#3b82f6",
                               wordBreak: "break-all",
                             }}
                           >
@@ -359,7 +351,7 @@ function AgentLogPage() {
                               .toString(16)
                               .substring(2)
                               .padEnd(64, "0")}
-                          </div>
+                          </a>
                         </div>
                       )}
                     </div>
@@ -376,7 +368,9 @@ function AgentLogPage() {
               }}
             >
               <div className="font-mono text-[14px]">
-                NO ENTRIES MATCH YOUR FILTER
+                {searchQuery || activeFilter !== "ALL"
+                  ? "NO ENTRIES MATCH YOUR FILTER"
+                  : "NO RECENT ACTIVITY — THE AGENT HAS NOT RUN ANY CHECKS YET"}
               </div>
             </div>
           )}

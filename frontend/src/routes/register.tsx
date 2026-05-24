@@ -6,7 +6,7 @@ import {
   VigilLayout,
   SectionLabel,
 } from "@/components/vigil/VigilLayout";
-import { usePostBond, useApproveUSDC, VIGIL_ADDRESS } from "@/lib/contracts";
+import { usePostBond, useApproveUSDC } from "@/lib/contracts";
 import { useAccount } from "wagmi";
 import { useArcNetwork } from "@/lib/wagmi";
 
@@ -38,8 +38,17 @@ const thresholds = [
   { label: "AGGRESSIVE", score: 75, color: ACCENT.yellow },
 ] as const;
 
+interface FormErrors {
+  handle?: string;
+  mandateStyle?: string;
+  maxLeverage?: string;
+  maxDrawdown?: string;
+  venues?: string;
+  bondAmount?: string;
+}
+
 function RegisterPage() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { isArcTestnet, switchToArc, isPending: isSwitching } = useArcNetwork();
   const { approve, data: approveHash, isPending: isApproving, error: approveError } = useApproveUSDC();
   const { postBond, data: bondHash, isPending: isBonding, error: bondError } = usePostBond();
@@ -48,9 +57,11 @@ function RegisterPage() {
   const [maxLeverage, setMaxLeverage] = useState("");
   const [maxDrawdown, setMaxDrawdown] = useState("");
   const [venues, setVenues] = useState("");
-  const [bondAmount, setBondAmount] = useState("10");
+  const [bondAmount, setBondAmount] = useState("");
   const [threshold, setThreshold] = useState<ThresholdType>("STANDARD");
   const [step, setStep] = useState<"approve" | "bond" | "done">("approve");
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Set<string>>(new Set());
 
   const { isSuccess: approveSuccess } = useWaitForTransactionReceipt({
     hash: approveHash,
@@ -61,6 +72,58 @@ function RegisterPage() {
 
   const bondValue = Number.parseFloat(bondAmount) || 0;
   const thresholdDetails = thresholds.find((t) => t.label === threshold) || thresholds[1];
+
+  const allFieldsFilled = Boolean(
+    handle.trim() &&
+    mandateStyle.trim() &&
+    maxLeverage.trim() &&
+    maxDrawdown.trim() &&
+    venues.trim() &&
+    bondAmount.trim() &&
+    bondValue > 0,
+  );
+
+  function validateField(name: string, value: string): string | undefined {
+    if (!value.trim()) {
+      return `${name.replace(/([A-Z])/g, ' $1').toUpperCase().trim()} IS REQUIRED`;
+    }
+    return undefined;
+  }
+
+  function validateAll(): FormErrors {
+    const e: FormErrors = {};
+    if (!handle.trim()) e.handle = "HANDLE IS REQUIRED";
+    if (!mandateStyle.trim()) e.mandateStyle = "MANDATE STYLE IS REQUIRED";
+    if (!maxLeverage.trim()) e.maxLeverage = "MAX LEVERAGE IS REQUIRED";
+    if (!maxDrawdown.trim()) e.maxDrawdown = "MAX DRAWDOWN IS REQUIRED";
+    if (!venues.trim()) e.venues = "VENUES IS REQUIRED";
+    if (!bondAmount.trim() || bondValue <= 0) e.bondAmount = "BOND AMOUNT MUST BE > 0";
+    return e;
+  }
+
+  function markTouched(name: string) {
+    setTouched((prev) => new Set(prev).add(name));
+  }
+
+  function handleBlur(name: string, value: string) {
+    markTouched(name);
+    const err = validateField(name, value);
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (err) next[name as keyof FormErrors] = err;
+      else delete next[name as keyof FormErrors];
+      return next;
+    });
+  }
+
+  // Reset step when wallet disconnects mid-flow
+  useEffect(() => {
+    if (!isConnected) {
+      setStep("approve");
+      setErrors({});
+      setTouched(new Set());
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     if (approveSuccess && step === "approve") {
@@ -103,12 +166,24 @@ function RegisterPage() {
   }, [bondError]);
 
   const handleSubmit = () => {
-    if (!address) return;
+    if (!address) {
+      toast.error("WALLET NOT CONNECTED", {
+        description: "Connect your wallet to post a bond.",
+      });
+      return;
+    }
+
+    const validationErrors = validateAll();
+    setErrors(validationErrors);
+    const allTouched = new Set(["handle", "mandateStyle", "maxLeverage", "maxDrawdown", "venues", "bondAmount"]);
+    setTouched(allTouched);
+
+    if (Object.keys(validationErrors).length > 0) return;
+
     if (!isArcTestnet) {
       switchToArc();
       return;
     }
-    if (!bondAmount || bondValue <= 0) return;
 
     if (step === "approve") {
       approve(bondValue);
@@ -116,6 +191,8 @@ function RegisterPage() {
       postBond(bondValue, thresholdDetails.score, 80);
     }
   };
+
+  const isSubmitDisabled = !address || isSwitching || isApproving || isBonding || !allFieldsFilled;
 
   const buttonLabel = !address
     ? "CONNECT WALLET FIRST"
@@ -133,15 +210,63 @@ function RegisterPage() {
                 ? "POSTING..."
                 : "POST BOND";
 
+  function renderField(
+    name: string,
+    label: string,
+    value: string,
+    setter: (v: string) => void,
+    placeholder: string,
+  ) {
+    const err = touched.has(name) ? errors[name as keyof FormErrors] : undefined;
+    return (
+      <div className="max-md:!mb-3" style={{ marginBottom: "24px" }}>
+        <label
+          className="text-[11px] uppercase tracking-[0.15em]"
+          style={{
+            color: "#666666",
+            display: "block",
+            marginBottom: "8px",
+          }}
+        >
+          {label}
+        </label>
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => setter(e.target.value)}
+          onBlur={() => handleBlur(name, value)}
+          className="font-mono text-[14px]"
+          style={{
+            width: "100%",
+            padding: "10px 12px",
+            backgroundColor: "#f8f8f8",
+            border: err ? "1px solid #dc2626" : "1px solid #d0d0d0",
+            color: "#0a0a0a",
+            outline: "none",
+          }}
+        />
+        {err && (
+          <div
+            className="font-mono text-[11px]"
+            style={{ color: "#dc2626", marginTop: "6px" }}
+          >
+            {err}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <VigilLayout>
-      <div className="max-md:!px-4" style={{ padding: "48px 40px" }}>
+      <div className="max-md:!px-4 max-md:!py-6" style={{ padding: "48px 40px" }}>
         {/* Section Label */}
         <SectionLabel>[TRADER] REGISTRATION</SectionLabel>
 
         {/* Headline */}
         <h1
-          className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl"
+          className="font-bold tracking-tight trader-bonds-heading max-md:!text-4xl max-md:!mt-3"
           style={{
             fontSize: "72px",
             lineHeight: 1.05,
@@ -155,7 +280,7 @@ function RegisterPage() {
 
         {/* Subtext */}
         <p
-          className="max-w-2xl"
+          className="max-w-2xl max-md:!mb-6"
           style={{
             fontSize: "15px",
             lineHeight: 1.65,
@@ -169,7 +294,7 @@ function RegisterPage() {
 
         {/* Form Layout - Two Columns */}
         <div
-          className="grid max-md:!grid-cols-1"
+          className="grid max-md:!grid-cols-1 max-md:!gap-4"
           style={{
             gridTemplateColumns: "1fr 1fr",
             gap: "32px",
@@ -178,153 +303,14 @@ function RegisterPage() {
         >
           {/* Left Column - Form Fields */}
           <div>
-            {/* Handle */}
-            <div style={{ marginBottom: "24px" }}>
-              <label
-                className="text-[11px] uppercase tracking-[0.15em]"
-                style={{
-                  color: "#666666",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                HANDLE
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 0xkairos"
-                value={handle}
-                onChange={(e) => setHandle(e.target.value)}
-                className="font-mono text-[14px]"
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  backgroundColor: "#f8f8f8",
-                  border: "1px solid #d0d0d0",
-                  color: "#0a0a0a",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            {/* Mandate Style */}
-            <div style={{ marginBottom: "24px" }}>
-              <label
-                className="text-[11px] uppercase tracking-[0.15em]"
-                style={{
-                  color: "#666666",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                MANDATE STYLE
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Delta-neutral basis trading"
-                value={mandateStyle}
-                onChange={(e) => setMandateStyle(e.target.value)}
-                className="font-mono text-[14px]"
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  backgroundColor: "#f8f8f8",
-                  border: "1px solid #d0d0d0",
-                  color: "#0a0a0a",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            {/* Max Leverage */}
-            <div style={{ marginBottom: "24px" }}>
-              <label
-                className="text-[11px] uppercase tracking-[0.15em]"
-                style={{
-                  color: "#666666",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                MAX LEVERAGE
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 3.0x"
-                value={maxLeverage}
-                onChange={(e) => setMaxLeverage(e.target.value)}
-                className="font-mono text-[14px]"
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  backgroundColor: "#f8f8f8",
-                  border: "1px solid #d0d0d0",
-                  color: "#0a0a0a",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            {/* Max Drawdown */}
-            <div style={{ marginBottom: "24px" }}>
-              <label
-                className="text-[11px] uppercase tracking-[0.15em]"
-                style={{
-                  color: "#666666",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                MAX DRAWDOWN
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. 8.0%"
-                value={maxDrawdown}
-                onChange={(e) => setMaxDrawdown(e.target.value)}
-                className="font-mono text-[14px]"
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  backgroundColor: "#f8f8f8",
-                  border: "1px solid #d0d0d0",
-                  color: "#0a0a0a",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            {/* Venues */}
-            <div style={{ marginBottom: "24px" }}>
-              <label
-                className="text-[11px] uppercase tracking-[0.15em]"
-                style={{
-                  color: "#666666",
-                  display: "block",
-                  marginBottom: "8px",
-                }}
-              >
-                VENUES
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Binance, Bybit, Hyperliquid"
-                value={venues}
-                onChange={(e) => setVenues(e.target.value)}
-                className="font-mono text-[14px]"
-                style={{
-                  width: "100%",
-                  padding: "10px 12px",
-                  backgroundColor: "#f8f8f8",
-                  border: "1px solid #d0d0d0",
-                  color: "#0a0a0a",
-                  outline: "none",
-                }}
-              />
-            </div>
+            {renderField("handle", "HANDLE", handle, setHandle, "e.g. 0xkairos")}
+            {renderField("mandateStyle", "MANDATE STYLE", mandateStyle, setMandateStyle, "e.g. Delta-neutral basis trading")}
+            {renderField("maxLeverage", "MAX LEVERAGE", maxLeverage, setMaxLeverage, "e.g. 3.0x")}
+            {renderField("maxDrawdown", "MAX DRAWDOWN", maxDrawdown, setMaxDrawdown, "e.g. 8.0%")}
+            {renderField("venues", "VENUES", venues, setVenues, "e.g. Binance, Bybit, Hyperliquid")}
 
             {/* Bond Amount */}
-            <div style={{ marginBottom: "24px" }}>
+            <div className="max-md:!mb-3" style={{ marginBottom: "24px" }}>
               <label
                 className="text-[11px] uppercase tracking-[0.15em]"
                 style={{
@@ -340,16 +326,25 @@ function RegisterPage() {
                 placeholder="e.g. 50000"
                 value={bondAmount}
                 onChange={(e) => setBondAmount(e.target.value)}
+                onBlur={() => handleBlur("bondAmount", bondAmount)}
                 className="font-mono text-[14px]"
                 style={{
                   width: "100%",
                   padding: "10px 12px",
                   backgroundColor: "#f8f8f8",
-                  border: "1px solid #d0d0d0",
+                  border: touched.has("bondAmount") && errors.bondAmount ? "1px solid #dc2626" : "1px solid #d0d0d0",
                   color: "#0a0a0a",
                   outline: "none",
                 }}
               />
+              {touched.has("bondAmount") && errors.bondAmount && (
+                <div
+                  className="font-mono text-[11px]"
+                  style={{ color: "#dc2626", marginTop: "6px" }}
+                >
+                  {errors.bondAmount}
+                </div>
+              )}
             </div>
           </div>
 
@@ -368,7 +363,7 @@ function RegisterPage() {
                 SLASH THRESHOLD
               </label>
               <div
-                className="max-md:!grid-cols-1"
+                className="max-md:!grid-cols-3 max-md:!gap-1"
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr 1fr",
@@ -590,7 +585,7 @@ function RegisterPage() {
         {/* Post Bond Button */}
         <button
           onClick={handleSubmit}
-          disabled={!address || isSwitching || isApproving || isBonding || bondValue <= 0}
+          disabled={isSubmitDisabled}
           style={{
             width: "100%",
             padding: "16px 24px",
@@ -601,10 +596,7 @@ function RegisterPage() {
             fontWeight: 600,
             textTransform: "uppercase",
             letterSpacing: "0.15em",
-            cursor:
-              !address || isSwitching || isApproving || isBonding || bondValue <= 0
-                ? "not-allowed"
-                : "pointer",
+            cursor: isSubmitDisabled ? "not-allowed" : "pointer",
             marginBottom: "16px",
           }}
         >
