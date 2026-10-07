@@ -1,3 +1,26 @@
 
+# env
 backend/.env
 .env
+*.local
+
+# dependencies
+node_modules/
+
+# builds
+dist/
+build/
+.next/
+out/
+dist-ssr/
+*.tsbuildinfo
+
+# foundry
+contracts/out/
+contracts/cache/
+broadcast/
+vite-dev.err
+dev.log
+
+# misc
+.DS_Store
